@@ -72,7 +72,12 @@ describe('settleBets', () => {
   });
 
   it('rounds 1.5x payouts down to whole tokens', () => {
-    const { players } = settleBets([player('a')], { a: 90 }, { a: [{ playerId: 'a', amount: 15 }] }, 100);
+    const { players } = settleBets(
+      [player('a')],
+      { a: 90 },
+      { a: [{ playerId: 'a', amount: 15 }] },
+      100,
+    );
     expect(players[0]?.tokens).toBe(222);
   });
 

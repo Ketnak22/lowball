@@ -72,7 +72,13 @@ describe('parseBets', () => {
     ['fractional amount', [{ playerId: 'a', amount: 1.5 }]],
     ['string amount', [{ playerId: 'a', amount: '10' }]],
     ['missing target', [{ amount: 10 }]],
-    ['duplicate target', [{ playerId: 'a', amount: 1 }, { playerId: 'a', amount: 2 }]],
+    [
+      'duplicate target',
+      [
+        { playerId: 'a', amount: 1 },
+        { playerId: 'a', amount: 2 },
+      ],
+    ],
     ['null entry', [null]],
   ])('rejects %s', (_label, input) => {
     expect(parseBets(input).ok).toBe(false);

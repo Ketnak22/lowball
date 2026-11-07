@@ -138,7 +138,12 @@ export function attachGameHandlers(io: GameServer, options: GameOptions) {
       const code = generateCode();
       if (!code) return reply(ack, failure('No free room codes right now, try again later.'));
 
-      const room = createRoom(code, { id: socket.id, name: name.value }, freshQuestions(), settings);
+      const room = createRoom(
+        code,
+        { id: socket.id, name: name.value },
+        freshQuestions(),
+        settings,
+      );
       console.info(`Room ${code} created.`);
       enter(room, undefined, ack);
     });

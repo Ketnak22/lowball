@@ -162,7 +162,10 @@ describe('bet validation', () => {
   const voting = () => answerAll(readyAll(lobby('ala', 'ola')), { ala: 90, ola: 120 });
 
   it('rejects bets on answers that do not exist', () => {
-    expectError(submitBets(voting(), 'ala', [{ playerId: 'nobody', amount: 5 }], NOW), /this round/);
+    expectError(
+      submitBets(voting(), 'ala', [{ playerId: 'nobody', amount: 5 }], NOW),
+      /this round/,
+    );
   });
 
   it('rejects bets above the player balance', () => {

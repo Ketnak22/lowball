@@ -8,8 +8,9 @@ export const connected = writable(socket.connected);
 /** Shown on the home screen, e.g. after the connection drops. */
 export const notice = writable<string | null>(null);
 
-export const me = derived([room, playerId], ([$room, $playerId]) =>
-  $room?.players.find((p) => p.id === $playerId) ?? null,
+export const me = derived(
+  [room, playerId],
+  ([$room, $playerId]) => $room?.players.find((p) => p.id === $playerId) ?? null,
 );
 
 socket.on('connect', () => connected.set(true));
