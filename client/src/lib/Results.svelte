@@ -9,7 +9,7 @@
   const TILTS = ['-2deg', '1.5deg', '2deg', '-1deg'];
 
   const result = $derived(room.round?.result ?? null);
-  const unit = $derived(room.round?.unit ?? '');
+  const unit = $derived(room.round?.unit.en ?? '');
   const myChange = $derived(($me && result?.tokenChanges[$me.id]) ?? 0);
 
   function nameOf(playerId: string): string {
@@ -50,7 +50,7 @@
   {#if result}
     <div class="reveal">
       <div class="correct">
-        <span class="label question">{room.round?.question}</span>
+        <span class="label question">{room.round?.question.en}</span>
         <span class="label">Correct answer</span>
         <div class="correct-line">
           <span class="hand big">{formatNumber(result.correctAnswer)}</span>

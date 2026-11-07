@@ -1,9 +1,9 @@
-import type { Bet, Phase } from '@lowball/shared';
+import type { Bet, Localized, Phase } from '@lowball/shared';
 
 export interface Question {
-  question: string;
+  question: Localized;
   answer: number;
-  unit: string;
+  unit: Localized;
 }
 
 export interface Player {

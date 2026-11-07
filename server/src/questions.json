@@ -1,52 +1,112 @@
 [
   {
-    "question": "Ile kilometrów ma równik Ziemi?",
+    "question": {
+      "pl": "Ile kilometrów ma równik Ziemi?",
+      "en": "How many kilometres long is the Earth's equator?"
+    },
     "answer": 40075,
-    "unit": "km"
+    "unit": {
+      "pl": "km",
+      "en": "km"
+    }
   },
   {
-    "question": "Ile litrów wody wypija przeciętny człowiek rocznie?",
+    "question": {
+      "pl": "Ile litrów wody wypija przeciętny człowiek rocznie?",
+      "en": "How many litres of water does an average person drink in a year?"
+    },
     "answer": 730,
-    "unit": "l"
+    "unit": {
+      "pl": "l",
+      "en": "l"
+    }
   },
   {
-    "question": "W którym roku wynaleziono żarówkę?",
+    "question": {
+      "pl": "W którym roku wynaleziono żarówkę?",
+      "en": "In what year was the light bulb invented?"
+    },
     "answer": 1879,
-    "unit": "rok"
+    "unit": {
+      "pl": "rok",
+      "en": "year"
+    }
   },
   {
-    "question": "Ile metrów wysokości ma Pałac Kultury i Nauki w Warszawie?",
+    "question": {
+      "pl": "Ile metrów wysokości ma Pałac Kultury i Nauki w Warszawie?",
+      "en": "How many metres tall is the Palace of Culture and Science in Warsaw?"
+    },
     "answer": 237,
-    "unit": "m"
+    "unit": {
+      "pl": "m",
+      "en": "m"
+    }
   },
   {
-    "question": "Ile procent ciała dorosłego człowieka stanowi woda?",
+    "question": {
+      "pl": "Ile procent ciała dorosłego człowieka stanowi woda?",
+      "en": "What percentage of an adult human body is water?"
+    },
     "answer": 60,
-    "unit": "%"
+    "unit": {
+      "pl": "%",
+      "en": "%"
+    }
   },
   {
-    "question": "Ile klatek na sekundę ma standardowy film kinowy?",
+    "question": {
+      "pl": "Ile klatek na sekundę ma standardowy film kinowy?",
+      "en": "How many frames per second does a standard cinema film have?"
+    },
     "answer": 24,
-    "unit": "kl/s"
+    "unit": {
+      "pl": "kl/s",
+      "en": "fps"
+    }
   },
   {
-    "question": "Ile kilogramów waży przeciętny koń pełnej krwi angielskiej?",
+    "question": {
+      "pl": "Ile kilogramów waży przeciętny koń pełnej krwi angielskiej?",
+      "en": "How many kilograms does an average Thoroughbred horse weigh?"
+    },
     "answer": 500,
-    "unit": "kg"
+    "unit": {
+      "pl": "kg",
+      "en": "kg"
+    }
   },
   {
-    "question": "Ile dni trwała II wojna światowa?",
+    "question": {
+      "pl": "Ile dni trwała II wojna światowa?",
+      "en": "How many days did the Second World War last?"
+    },
     "answer": 2194,
-    "unit": "dni"
+    "unit": {
+      "pl": "dni",
+      "en": "days"
+    }
   },
   {
-    "question": "Ile stron ma polska konstytucja z 1997 roku (wersja drukowana)?",
+    "question": {
+      "pl": "Ile stron ma polska konstytucja z 1997 roku (wersja drukowana)?",
+      "en": "How many pages long is the 1997 Polish constitution (printed edition)?"
+    },
     "answer": 52,
-    "unit": "strony"
+    "unit": {
+      "pl": "strony",
+      "en": "pages"
+    }
   },
   {
-    "question": "Ile sekund trwa przeciętny przebłysk pamięci sensorycznej?",
+    "question": {
+      "pl": "Ile sekund trwa przeciętny przebłysk pamięci sensorycznej?",
+      "en": "How many seconds does an average flash of sensory memory last?"
+    },
     "answer": 0.5,
-    "unit": "sekundy"
+    "unit": {
+      "pl": "sekundy",
+      "en": "seconds"
+    }
   }
 ]

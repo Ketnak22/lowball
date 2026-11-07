@@ -46,7 +46,7 @@
   </header>
 
   <div class="intro">
-    <span class="label">{room.round?.question}</span>
+    <span class="label">{room.round?.question.en}</span>
     <p class="hint">
       Spread your tokens over the answers you trust, or skip this round. Answers are sorted from
       lowest to highest.
@@ -59,7 +59,7 @@
         <li class="paper card" style="--tilt: {TILTS[index % TILTS.length]}">
           <span class="whose">{answer.playerId === $me?.id ? 'Your answer' : 'Answer'}</span>
           <span class="value hand pen">{formatNumber(answer.value)}</span>
-          <span class="label">{room.round?.unit}</span>
+          <span class="label">{room.round?.unit.en}</span>
           <label class="stake">
             <span class="label">Bet</span>
             <input

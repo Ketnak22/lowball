@@ -14,8 +14,8 @@ import type { Question, Room } from './types';
 import { toRoomView } from './view';
 
 const questions: Question[] = [
-  { question: 'Q1', answer: 100, unit: 'm' },
-  { question: 'Q2', answer: 50, unit: 'kg' },
+  { question: { pl: 'P1', en: 'Q1' }, answer: 100, unit: { pl: 'm', en: 'm' } },
+  { question: { pl: 'P2', en: 'Q2' }, answer: 50, unit: { pl: 'kg', en: 'kg' } },
 ];
 const settings = { totalRounds: 2, resultsDurationMs: 1000, rankingDurationMs: 2000 };
 const NOW = 10_000;
@@ -80,7 +80,7 @@ describe('phase transitions', () => {
   it('starts the first round when everyone is ready', () => {
     const room = unwrap(setReady(unwrap(setReady(lobby('ala', 'ola'), 'ala', true)), 'ola', true));
     expect(room.phase).toBe('answering');
-    expect(room.round?.question.question).toBe('Q1');
+    expect(room.round?.question.question.en).toBe('Q1');
     expect(room.players.every((p) => !p.ready)).toBe(true);
   });
 
@@ -119,7 +119,7 @@ describe('phase transitions', () => {
 
     room = advancePhase(room, NOW);
     expect(room.phase).toBe('answering');
-    expect(room.round?.question.question).toBe('Q2');
+    expect(room.round?.question.question.en).toBe('Q2');
     expect(room.round?.answers).toEqual({});
 
     room = voteAll(answerAll(room, { ala: 1, ola: 2 }));

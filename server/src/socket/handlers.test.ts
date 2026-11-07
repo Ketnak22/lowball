@@ -15,7 +15,9 @@ import { attachGameHandlers, type GameServer } from './handlers';
 
 type Client = Socket<ServerToClientEvents, ClientToServerEvents>;
 
-const questions: Question[] = [{ question: 'How tall?', answer: 100, unit: 'm' }];
+const questions: Question[] = [
+  { question: { pl: 'Jak wysoko?', en: 'How tall?' }, answer: 100, unit: { pl: 'm', en: 'm' } },
+];
 
 let httpServer: HttpServer;
 let io: GameServer;
@@ -82,7 +84,7 @@ describe('socket handlers', () => {
     const answering = nextState(host, (r) => r.phase === 'answering');
     await emit((ack) => host.emit('player:ready', { ready: true }, ack));
     await emit((ack) => guest.emit('player:ready', { ready: true }, ack));
-    expect((await answering).round?.question).toBe('How tall?');
+    expect((await answering).round?.question).toEqual({ pl: 'Jak wysoko?', en: 'How tall?' });
 
     const voting = nextState(host, (r) => r.phase === 'voting');
     await emit((ack) => host.emit('round:answer', { answer: '90' }, ack));

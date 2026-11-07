@@ -1,4 +1,5 @@
 import type { ErrorCode } from './errors';
+import type { Localized } from './locale';
 
 export type Phase = 'lobby' | 'answering' | 'voting' | 'results' | 'ranking' | 'finished';
 
@@ -31,8 +32,8 @@ export interface RoundResultView {
 
 export interface RoundView {
   number: number;
-  question: string;
-  unit: string;
+  question: Localized;
+  unit: Localized;
   /** Filled in once voting starts, sorted ascending. */
   answers: AnswerView[];
   result: RoundResultView | null;

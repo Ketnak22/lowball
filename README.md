@@ -165,7 +165,7 @@ Free plans on these platforms usually put the server to sleep after a period wit
 - The server is meant to run as a single instance. Running several would need a shared Socket.IO adapter (for example Redis) and shared room storage.
 - There are no accounts. A player is identified by their socket connection, so refreshing the page or losing the connection removes them from the room, and they cannot rejoin a game in progress.
 - There is no time limit for answering or voting, so one inactive player holds up the round until they act or leave.
-- Questions are in Polish and are loaded from a JSON file bundled with the server.
+- Questions are stored in Polish and English in a JSON file bundled with the server.
 - The countdown shown between rounds uses the browser's clock, so it can be off by the difference between the client and server clocks.
 
 ## License

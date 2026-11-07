@@ -34,7 +34,7 @@
   <div class="columns">
     <div class="column prompt">
       <span class="label">Question {room.round?.number}</span>
-      <h1 class="title">{room.round?.question}</h1>
+      <h1 class="title">{room.round?.question.en}</h1>
       <div class="stack hints">
         <p class="hint">Write down a number. Nobody sees it until everyone has handed in.</p>
         <p class="hint">Then everyone bets on the answer closest without going over.</p>
@@ -57,7 +57,7 @@
             disabled={handedIn}
             oninput={() => (error = null)}
           />
-          <span class="unit muted">{room.round?.unit}</span>
+          <span class="unit muted">{room.round?.unit.en}</span>
         </div>
       </div>
 
