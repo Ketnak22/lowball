@@ -7,6 +7,7 @@ const ok = <T>(value: T): Result<T> => ({ ok: true, value });
 const fail = <T>(error: string): Result<T> => ({ ok: false, error });
 
 const NAME_PATTERN = /^[\p{L}\p{N} _.-]+$/u;
+const ROOM_CODE_PATTERN = new RegExp(String.raw`^\d{${ROOM_CODE_LENGTH}}$`);
 
 export function validateName(input: unknown): Result<string> {
   if (typeof input !== 'string') return fail('Name is required.');
@@ -24,7 +25,7 @@ export function validateName(input: unknown): Result<string> {
 export function validateRoomCode(input: unknown): Result<string> {
   if (typeof input !== 'string') return fail('Room code is required.');
   const code = input.trim();
-  if (!new RegExp(`^\d{${ROOM_CODE_LENGTH}}$`).test(code)) {
+  if (!ROOM_CODE_PATTERN.test(code)) {
     return fail(`Room code must be ${ROOM_CODE_LENGTH} digits.`);
   }
   return ok(code);
