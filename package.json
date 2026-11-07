@@ -6,6 +6,7 @@
   "description": "Real-time multiplayer guessing and betting game for the browser.",
   "license": "MIT",
   "workspaces": [
+    "shared",
     "server",
     "client"
   ],
@@ -14,7 +15,8 @@
   },
   "scripts": {
     "dev": "concurrently -n server,client -c blue,magenta \"npm run dev -w server\" \"npm run dev -w client\"",
-    "build": "npm run build --workspaces --if-present"
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present"
   },
   "devDependencies": {
     "concurrently": "^9.2.1"
