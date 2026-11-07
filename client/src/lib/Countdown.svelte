@@ -11,13 +11,19 @@
 </script>
 
 {#if seconds !== null}
-  <p class="countdown">{label} {seconds}s</p>
+  <p class="countdown" role="timer">
+    {label} <span class="hand">{seconds}</span> s
+  </p>
 {/if}
 
 <style>
   .countdown {
-    margin-top: 16px;
-    font-weight: 600;
-    color: #4b3869;
+    color: var(--ink-soft);
+    text-align: center;
+  }
+  .hand {
+    margin: 0 0.15em;
+    font-size: 32px;
+    color: var(--ink);
   }
 </style>

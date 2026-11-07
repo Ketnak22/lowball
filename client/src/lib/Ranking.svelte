@@ -1,14 +1,44 @@
 <script lang="ts">
   import type { RoomView } from '@lowball/shared';
   import Countdown from './Countdown.svelte';
+  import { initials, signed } from './format';
   import { actions, me } from './game';
 
   let { room }: { room: RoomView } = $props();
   let error = $state<string | null>(null);
 
   const finished = $derived(room.phase === 'finished');
-  const ranking = $derived([...room.players].sort((a, b) => b.tokens - a.tokens));
   const isHost = $derived($me?.id === room.hostId);
+  const changes = $derived(room.round?.result?.tokenChanges ?? {});
+
+  /** Sorted by tokens; players with equal tokens share a place. */
+  const rows = $derived.by(() => {
+    const sorted = [...room.players].sort(
+      (a, b) => b.tokens - a.tokens || Number(b.id === $me?.id) - Number(a.id === $me?.id),
+    );
+    let place = 0;
+    return sorted.map((player, index) => {
+      if (index === 0 || player.tokens !== sorted[index - 1]?.tokens) place = index + 1;
+      return { player, place, isMe: player.id === $me?.id };
+    });
+  });
+
+  const leaders = $derived(rows.filter((row) => row.place === 1));
+  const long = $derived(rows.length > 5);
+
+  const heading = $derived.by(() => {
+    const [first] = leaders;
+    if (!first) return '';
+    if (leaders.length > 1) return finished ? 'It ends in a tie' : 'Tied for the lead';
+    if (first.isMe) return finished ? 'You win' : 'You are in the lead';
+    return finished ? `${first.player.name} wins` : `${first.player.name} leads`;
+  });
+
+  const caption = $derived.by(() => {
+    if (finished) return `${room.totalRounds} rounds, ${room.players.length} players.`;
+    const remaining = room.totalRounds - (room.round?.number ?? 0);
+    return remaining === 1 ? 'One round left.' : `${remaining} rounds left.`;
+  });
 
   async function playAgain() {
     const response = await actions.restart();
@@ -16,45 +46,195 @@
   }
 </script>
 
-<section class="card">
-  <h2 class="title">{finished ? 'Final ranking' : 'Ranking'}</h2>
+<section class="screen">
+  <header class="topbar ruled">
+    <span class="hand">
+      {finished ? 'game over' : `after round ${room.round?.number} / ${room.totalRounds}`}
+    </span>
+    <span class="hand">ranking</span>
+  </header>
 
-  <ol class="list">
-    {#each ranking as player, index (player.id)}
-      <li class="row place-{index + 1}">
-        <span class="value">{index + 1}. {player.name}</span>
-        <span>{player.tokens} tokens</span>
-      </li>
-    {/each}
-  </ol>
+  <div class="layout">
+    <h1 class="title heading">{heading}</h1>
 
-  {#if finished}
-    <div class="actions">
-      <button class="btn red-btn" onclick={actions.leave}>Leave</button>
-      {#if isHost}
-        <button class="btn green-btn" onclick={playAgain}>Play again</button>
+    <div class="paper sheet" style="--tilt: 1deg">
+      <ol class="rows" class:long aria-label="Ranking">
+        {#each rows as { player, place, isMe } (player.id)}
+          <li class:me={isMe}>
+            <span class="hand place">{place}</span>
+            <span class="avatar" aria-hidden="true">{initials(player.name)}</span>
+            <span class="name" class:strong={isMe || (finished && place === 1)}>
+              {isMe ? 'You' : player.name}
+              {#if finished && place === 1}<span class="underline" aria-hidden="true"></span>{/if}
+            </span>
+            {#if !finished && changes[player.id]}
+              <span class="label">{signed(changes[player.id] ?? 0)}</span>
+            {/if}
+            <span class="hand pen tokens">{player.tokens}</span>
+          </li>
+        {/each}
+      </ol>
+    </div>
+
+    <p class="hint caption">
+      {caption}
+      {#if long}Your row stays visible while you scroll.{/if}
+    </p>
+
+    <div class="stack actions">
+      {#if finished}
+        {#if isHost}
+          <button class="btn" onclick={playAgain}>Play again</button>
+        {:else}
+          <p class="note">The host can start a new game with everyone still in the room.</p>
+        {/if}
+        <button class="btn secondary" onclick={actions.leave}>Leave game</button>
+        <div class="error-slot" aria-live="polite">
+          {#if error}<p class="error">{error}</p>{/if}
+        </div>
+      {:else}
+        <Countdown endsAt={room.phaseEndsAt} label="Next round in" />
       {/if}
     </div>
-    {#if !isHost}
-      <p>The host can start a new game with everyone still in the room.</p>
-    {/if}
-  {:else}
-    <Countdown endsAt={room.phaseEndsAt} label="Next round in" />
-  {/if}
-
-  {#if error}
-    <p class="error" role="alert">{error}</p>
-  {/if}
+  </div>
 </section>
 
 <style>
-  .place-1 {
-    background: #ffe082;
+  .layout {
+    flex-grow: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto auto 1fr;
+    grid-template-areas: 'heading' 'sheet' 'caption' 'actions';
+    gap: 16px;
   }
-  .place-2 {
-    background: #e0e0e0;
+  .heading {
+    grid-area: heading;
+    margin-top: 8px;
   }
-  .place-3 {
-    background: #ffccbc;
+  .sheet {
+    grid-area: sheet;
+    margin: 8px 2px 0;
+    padding: 8px 18px;
+  }
+  .caption {
+    grid-area: caption;
+    font-size: 16px;
+  }
+  .actions {
+    grid-area: actions;
+    align-self: end;
+  }
+  .rows {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .rows.long {
+    max-height: 50dvh;
+    overflow-y: auto;
+  }
+  .rows li {
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--grid);
+    background: var(--paper);
+  }
+  .rows li:last-child {
+    border-bottom: none;
+  }
+  .rows.long li.me {
+    position: sticky;
+    top: 0;
+    bottom: 0;
+    z-index: 1;
+    box-shadow:
+      0 -1.5px 0 var(--ink),
+      0 1.5px 0 var(--ink);
+  }
+  .place {
+    width: 22px;
+    font-size: 32px;
+    line-height: 1;
+  }
+  .name {
+    position: relative;
+    flex-grow: 1;
+    min-width: 0;
+    font-size: 18px;
+  }
+  .strong {
+    font-weight: 600;
+  }
+  .underline {
+    position: absolute;
+    left: -4px;
+    bottom: -4px;
+    width: 72px;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--pencil);
+    transform: rotate(-2deg);
+  }
+  .tokens {
+    min-width: 48px;
+    text-align: right;
+    font-size: 32px;
+    line-height: 1;
+  }
+
+  @media (min-width: 900px) {
+    .layout {
+      flex-grow: 0;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 560px);
+      grid-template-rows: auto auto 1fr;
+      grid-template-areas: 'heading sheet' 'caption sheet' 'actions sheet';
+      gap: 16px 72px;
+    }
+    .heading {
+      margin-top: 0;
+    }
+    .sheet {
+      align-self: start;
+      margin: 0;
+      padding: 12px 28px;
+    }
+    .caption {
+      font-size: 20px;
+    }
+    .actions {
+      align-self: start;
+      max-width: 360px;
+      margin-top: 24px;
+    }
+    .actions :global(.countdown) {
+      text-align: left;
+    }
+    .rows.long {
+      max-height: 456px;
+    }
+    .rows li {
+      min-height: 72px;
+      gap: 16px;
+    }
+    .place {
+      width: 28px;
+      font-size: 40px;
+    }
+    .name {
+      font-size: 22px;
+    }
+    .underline {
+      bottom: -6px;
+      width: 84px;
+    }
+    .tokens {
+      min-width: 56px;
+      font-size: 40px;
+    }
   }
 </style>

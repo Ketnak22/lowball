@@ -1,5 +1,6 @@
 <script lang="ts">
   import { connected, room } from './lib/game';
+  import Connection from './lib/Connection.svelte';
   import Home from './lib/Home.svelte';
   import Lobby from './lib/Lobby.svelte';
   import Question from './lib/Question.svelte';
@@ -10,10 +11,8 @@
 
 <main>
   {#if !$connected}
-    <p class="banner">Connecting to the server...</p>
-  {/if}
-
-  {#if !$room}
+    <Connection />
+  {:else if !$room}
     <Home />
   {:else if $room.phase === 'lobby'}
     <Lobby room={$room} />

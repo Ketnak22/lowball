@@ -1,9 +1,20 @@
 <script lang="ts">
-  import { MIN_PLAYERS, type RoomView } from '@lowball/shared';
+  import { MAX_PLAYERS, MIN_PLAYERS, type PlayerView, type RoomView } from '@lowball/shared';
+  import { initials } from './format';
   import { actions, me } from './game';
 
   let { room }: { room: RoomView } = $props();
   let error = $state<string | null>(null);
+
+  const tooFew = $derived(room.players.length < MIN_PLAYERS);
+
+  function details(player: PlayerView): string {
+    const parts: string[] = [];
+    if (player.id === $me?.id) parts.push('you');
+    if (player.id === room.hostId) parts.push('host');
+    parts.push(player.ready ? 'ready' : 'not ready');
+    return parts.join(' · ');
+  }
 
   async function toggleReady() {
     const response = await actions.setReady(!$me?.ready);
@@ -11,75 +22,128 @@
   }
 </script>
 
-<section class="card wide-card">
-  <p class="label">Room code</p>
-  <h1 class="room-code">{room.code}</h1>
-  <p>Share the code with other players. The game starts when everyone is ready.</p>
+<section class="screen">
+  <header class="topbar ruled">
+    <span class="hand">lobby</span>
+    <button class="text-btn" onclick={actions.leave}>Leave room</button>
+  </header>
 
-  <ul class="players">
-    {#each room.players as player (player.id)}
-      <li class:ready={player.ready}>
-        <span class="name">{player.name}</span>
-        {#if player.id === room.hostId}<span class="tag">host</span>{/if}
-        {#if player.id === $me?.id}<span class="tag">you</span>{/if}
-      </li>
-    {/each}
-  </ul>
+  <div class="columns">
+    <div class="column">
+      <div class="paper code-card">
+        <span class="label">Room code</span>
+        <span class="code hand pen">{room.code}</span>
+        <span class="label">Share this code. Others enter it on the start screen.</span>
+      </div>
+    </div>
 
-  {#if room.players.length < MIN_PLAYERS}
-    <p class="info">Waiting for at least {MIN_PLAYERS} players.</p>
-  {/if}
+    <div class="column">
+      <h2 class="players-title">Players ({room.players.length}/{MAX_PLAYERS})</h2>
+      <ul class="players" aria-label="Players">
+        {#each room.players as player (player.id)}
+          <li>
+            <span class="avatar" class:pending={!player.ready} aria-hidden="true">
+              {initials(player.name)}
+            </span>
+            <span class="name">{player.name}</span>
+            <span class="label">{details(player)}</span>
+          </li>
+        {/each}
+      </ul>
 
-  <div class="actions">
-    <button class="btn red-btn" onclick={actions.leave}>Leave</button>
-    <button class="btn green-btn" onclick={toggleReady}>
-      {$me?.ready ? 'Not ready' : 'Ready'}
-    </button>
+      <div class="spacer"></div>
+
+      <div class="stack actions">
+        {#if tooFew}
+          <p class="note">Waiting for at least {MIN_PLAYERS} players.</p>
+        {/if}
+        <button class="btn" class:secondary={$me?.ready} onclick={toggleReady}>
+          {$me?.ready ? 'Not ready yet' : 'Ready'}
+        </button>
+        <p class="label center">The game starts for everyone once all players are ready.</p>
+        <div class="error-slot" aria-live="polite">
+          {#if error}<p class="error center">{error}</p>{/if}
+        </div>
+      </div>
+    </div>
   </div>
-
-  {#if error}
-    <p class="error" role="alert">{error}</p>
-  {/if}
 </section>
 
 <style>
-  .room-code {
-    background: #4b3869;
-    color: #fff;
-    border-radius: 0.7em;
-    padding: 12px 36px;
-    margin: 0 0 12px;
-    letter-spacing: 0.2em;
+  .topbar {
+    align-items: center;
+  }
+  .code-card {
+    margin: 8px 6px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    text-align: center;
+  }
+  .code {
+    font-size: 80px;
+    line-height: 1.05;
+    letter-spacing: 0.1em;
+  }
+  .players-title {
+    margin-top: 16px;
+    font-size: 19px;
+    font-weight: 600;
   }
   .players {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1rem;
     list-style: none;
+    margin: 0;
     padding: 0;
-    margin: 16px 0;
+    display: flex;
+    flex-direction: column;
   }
   .players li {
+    min-height: 52px;
     display: flex;
     align-items: center;
-    gap: 6px;
-    min-width: 120px;
-    min-height: 56px;
-    padding: 0 18px;
-    justify-content: center;
-    border-radius: 0.7em;
-    color: #fff;
-    font-weight: 600;
-    background: #e57373;
-  }
-  .players li.ready {
-    background: #4caf50;
+    gap: 12px;
+    border-bottom: 1px solid var(--grid);
   }
   .name {
-    max-width: 15ch;
+    flex-grow: 1;
+    min-width: 0;
+    font-size: 18px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  @media (min-width: 900px) {
+    .code-card {
+      margin: 8px 0 0;
+      padding: 36px 32px;
+      gap: 4px;
+    }
+    .code {
+      font-size: 160px;
+      line-height: 1;
+      letter-spacing: 0.08em;
+    }
+    .code-card .label {
+      font-size: 18px;
+    }
+    .players-title {
+      margin-top: 0;
+      font-size: 24px;
+    }
+    .players {
+      max-height: 362px;
+      overflow-y: auto;
+    }
+    .players li {
+      min-height: 60px;
+    }
+    .name {
+      font-size: 20px;
+    }
+    .actions {
+      margin-top: 16px;
+    }
   }
 </style>
