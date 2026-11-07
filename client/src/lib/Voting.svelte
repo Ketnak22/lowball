@@ -1,8 +1,7 @@
 <script lang="ts">
     import { socket } from "../socketStore";
-    import { gameState, users } from "../usersStore";
-    import { currentRoom } from "../roomStore";
-    import type { Question, UserAnswer, Response } from "../interfaces";
+    import { gameState } from "../usersStore";
+    import type { UserAnswer, Response } from "../interfaces";
     import { userAnswers } from "../userAnswersStore";
 
     interface VotedAnswer {
@@ -16,7 +15,6 @@
     let startingTokens: number;
     // svelte-ignore non_reactive_update
         let unit = "";
-    // let anwsers = $state<UserAnswer[]>([]);
     let votedAnswers = $state<VotedAnswer[]>([]);
     $socket.emit("start-voting", (response: Response, r_anwsers: UserAnswer[], r_unit: string, r_tokens: number) => {
         if (!response.success) {

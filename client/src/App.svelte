@@ -2,7 +2,6 @@
   import { socket } from './socketStore';
   import JoinRoom from './lib/JoinRoom.svelte';
   import CreateRoom from './lib/CreateRoom.svelte';
-  import { currentRoom } from './roomStore';
   import WaitingRoom from './lib/WaitingRoom.svelte';
   import { users, gameState } from './usersStore';
   import Question from './lib/Question.svelte';

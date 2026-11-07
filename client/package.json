@@ -19,7 +19,6 @@
     "vite": "^6.3.1"
   },
   "dependencies": {
-    "@sveltejs/adapter-node": "^5.2.12",
     "socket.io-client": "^4.8.1"
   }
 }

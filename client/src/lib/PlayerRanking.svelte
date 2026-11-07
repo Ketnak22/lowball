@@ -1,9 +1,7 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import { socket } from "../socketStore";
-    import { users, gameState } from "../usersStore";
-    import type { User, Response } from "../interfaces";
-  import { answers } from "../answersStore";
+    import { gameState } from "../usersStore";
 
     interface RankingUser {
         username: string;
@@ -29,17 +27,6 @@
         endOfGame = true;
     });
 
-    // function startNewGame() {
-    //     answers.set([]);
-    //     users.update((u) => u.map(user => ({ ...user, ready: false })));
-    //     $socket.emit("start-new-game", (successfull: Response) => {
-    //         if (successfull.success) {
-    //             $gameState = "waiting";
-    //         } else {
-    //             alert("Error starting new game");
-    //         }
-    //     });
-    // }
 
 
     function exit() {
@@ -69,7 +56,6 @@
             {/each}
         </ul>
         {#if endOfGame}
-            <!-- <button onclick={startNewGame} class="btn green-btn new-game-btn">Start New Game</button> -->
             <button onclick={exit} class="btn green-btn back-btn">Exit</button>
         {/if}
     {/if}

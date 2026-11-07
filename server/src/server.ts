@@ -1,4 +1,4 @@
-import { createServer, get } from 'http';
+import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { app } from './app.ts';
 
@@ -398,7 +398,6 @@ io.on("connection", socket => {
     cb(correctAnswer, closestAnswer, getCurrentQuestionUnit(), tokens, allUsersTokens);
 
     console.log(`User ${user?.username} now has ${tokens} tokens after voting.`);
-    // Removed setTimeouts from here
   })
 
   function calculateTokens() {
@@ -452,9 +451,6 @@ io.on("connection", socket => {
     return Math.max(...answers);
   }
   
-  // socket.on("next-round", () => {
-  //   usersList[userRoom].questionCounter++;
-  // })
 
   socket.on("get-player-rankings", (cb: (rankings: {username: string, tokens: number}[]) => void) => {
     const rankings = usersList[userRoom]?.users
@@ -464,27 +460,6 @@ io.on("connection", socket => {
     cb(rankings || []);
   });
 
-  // socket.on("start-new-game", (cb: (response: Response) => void) => {
-  //   if (!userRoom || !usersList[userRoom]) {
-  //     cb({ success: false, message: "No room found!" });
-  //     return;
-  //   }
-
-  //   // Reset all users in the room
-  //   usersList[userRoom].users.forEach(user => {
-  //     user.ready = false;
-  //     user.answer = undefined;
-  //     user.tokens = DEFAULT_USER_TOKENS; // Reset tokens
-  //     user.votedAnwsers = [];
-  //   });
-
-  //   usersList[userRoom].questionCounter = 0; // Reset question counter
-
-  //   console.log(`Starting new game in room ${userRoom}`);
-  //   io.to(userRoom).emit("new-game-started");
-
-  //   cb({ success: true });
-  // });
 })
 
 httpServer.listen(PORT, () => {

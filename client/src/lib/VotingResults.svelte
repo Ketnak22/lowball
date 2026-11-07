@@ -2,8 +2,7 @@
     import { onMount } from "svelte";
 
     import { socket } from "../socketStore";
-    import { gameState, users } from "../usersStore";
-    import type { Question, UserAnswer, Response } from "../interfaces";
+    import { gameState } from "../usersStore";
 
     import { userAnswers } from "../userAnswersStore";
 
