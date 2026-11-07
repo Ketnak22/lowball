@@ -14,7 +14,9 @@
     doneLabel: string;
   } = $props();
 
-  const waiting = $derived(players.filter((p) => p.id !== meId && !done(p)).map((p) => p.name));
+  const waiting = $derived(
+    players.filter((p) => !done(p)).map((p) => (p.id === meId ? 'you' : p.name)),
+  );
   const description = $derived(
     players.map((p) => `${p.name}: ${done(p) ? doneLabel : 'still thinking'}`).join(', '),
   );
