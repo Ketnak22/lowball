@@ -3,7 +3,7 @@
     import { socket } from "../socketStore";
     import { users, gameState } from "../usersStore";
     import type { User, Response } from "../interfaces";
-  import { anwsers } from "../anwsersStore";
+  import { answers } from "../answersStore";
 
     interface RankingUser {
         username: string;
@@ -30,7 +30,7 @@
     });
 
     // function startNewGame() {
-    //     anwsers.set([]);
+    //     answers.set([]);
     //     users.update((u) => u.map(user => ({ ...user, ready: false })));
     //     $socket.emit("start-new-game", (successfull: Response) => {
     //         if (successfull.success) {

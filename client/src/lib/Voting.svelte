@@ -3,7 +3,7 @@
     import { gameState, users } from "../usersStore";
     import { currentRoom } from "../roomStore";
     import type { Question, UserAnswer, Response } from "../interfaces";
-    import { userAnswers } from "../ userAnswersStore";
+    import { userAnswers } from "../userAnswersStore";
 
     interface VotedAnswer {
         id: string;

@@ -5,7 +5,7 @@
     import { gameState, users } from "../usersStore";
     import type { Question, UserAnswer, Response } from "../interfaces";
 
-    import { userAnswers } from "../ userAnswersStore";
+    import { userAnswers } from "../userAnswersStore";
 
 
     let correctAnswer: number;
