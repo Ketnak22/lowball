@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { notice } from './game';
+  import { connectionLost } from './game';
+  import { t } from './i18n';
   import { socket } from './socket';
 </script>
 
@@ -10,17 +11,13 @@
     <div class="dots" aria-hidden="true">
       <span></span><span></span><span></span>
     </div>
-    <span class="hand heading">Connecting…</span>
-    <p class="hint">
-      {$notice
-        ? 'The connection to the game server dropped, so you left the room. Once it is back you can create or join a room again.'
-        : 'Trying to reach the game server.'}
-    </p>
+    <span class="hand heading">{$t.connection.heading}</span>
+    <p class="hint">{$connectionLost ? $t.connection.lost : $t.connection.trying}</p>
   </div>
 
   <div class="spacer"></div>
 
-  <button class="btn secondary" onclick={() => socket.connect()}>Try now</button>
+  <button class="btn secondary" onclick={() => socket.connect()}>{$t.connection.retry}</button>
 </section>
 
 <style>

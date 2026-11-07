@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { ErrorCode, RoomView } from '@lowball/shared';
-  import { errorMessage } from './errors';
+  import { t } from './i18n';
   import Countdown from './Countdown.svelte';
   import { initials, signed } from './format';
   import { actions, me } from './game';
@@ -30,15 +30,14 @@
   const heading = $derived.by(() => {
     const [first] = leaders;
     if (!first) return '';
-    if (leaders.length > 1) return finished ? 'It ends in a tie' : 'Tied for the lead';
-    if (first.isMe) return finished ? 'You win' : 'You are in the lead';
-    return finished ? `${first.player.name} wins` : `${first.player.name} leads`;
+    if (leaders.length > 1) return finished ? $t.ranking.tieFinal : $t.ranking.tieLead;
+    if (first.isMe) return finished ? $t.ranking.youWin : $t.ranking.youLead;
+    return finished ? $t.ranking.wins(first.player.name) : $t.ranking.leads(first.player.name);
   });
 
   const caption = $derived.by(() => {
-    if (finished) return `${room.totalRounds} rounds, ${room.players.length} players.`;
-    const remaining = room.totalRounds - (room.round?.number ?? 0);
-    return remaining === 1 ? 'One round left.' : `${remaining} rounds left.`;
+    if (finished) return $t.ranking.summary(room.totalRounds, room.players.length);
+    return $t.ranking.left(room.totalRounds - (room.round?.number ?? 0));
   });
 
   async function playAgain() {
@@ -50,22 +49,24 @@
 <section class="screen">
   <header class="topbar ruled">
     <span class="hand">
-      {finished ? 'game over' : `after round ${room.round?.number} / ${room.totalRounds}`}
+      {finished
+        ? $t.ranking.topbarOver
+        : $t.ranking.topbarAfter(room.round?.number ?? 0, room.totalRounds)}
     </span>
-    <span class="hand">ranking</span>
+    <span class="hand">{$t.ranking.topbar}</span>
   </header>
 
   <div class="layout">
     <h1 class="title heading">{heading}</h1>
 
     <div class="paper sheet" style="--tilt: 1deg">
-      <ol class="rows" class:long aria-label="Ranking">
+      <ol class="rows" class:long aria-label={$t.ranking.list}>
         {#each rows as { player, place, isMe } (player.id)}
           <li class:me={isMe}>
             <span class="hand place">{place}</span>
             <span class="avatar" aria-hidden="true">{initials(player.name)}</span>
             <span class="name" class:strong={isMe || (finished && place === 1)}>
-              {isMe ? 'You' : player.name}
+              {isMe ? $t.common.you : player.name}
               {#if finished && place === 1}<span class="underline" aria-hidden="true"></span>{/if}
             </span>
             {#if !finished && changes[player.id]}
@@ -79,22 +80,22 @@
 
     <p class="hint caption">
       {caption}
-      {#if long}Your row stays visible while you scroll.{/if}
+      {#if long}{$t.ranking.sticky}{/if}
     </p>
 
     <div class="stack actions">
       {#if finished}
         {#if isHost}
-          <button class="btn" onclick={playAgain}>Play again</button>
+          <button class="btn" onclick={playAgain}>{$t.ranking.playAgain}</button>
         {:else}
-          <p class="note">The host can start a new game with everyone still in the room.</p>
+          <p class="note">{$t.ranking.hostNote}</p>
         {/if}
-        <button class="btn secondary" onclick={actions.leave}>Leave game</button>
+        <button class="btn secondary" onclick={actions.leave}>{$t.ranking.leave}</button>
         <div class="error-slot" aria-live="polite">
-          {#if error}<p class="error">{errorMessage(error)}</p>{/if}
+          {#if error}<p class="error">{$t.errors[error]}</p>{/if}
         </div>
       {:else}
-        <Countdown endsAt={room.phaseEndsAt} label="Next round in" />
+        <Countdown endsAt={room.phaseEndsAt} label={$t.ranking.next} />
       {/if}
     </div>
   </div>

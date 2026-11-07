@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { t } from './i18n';
+
   let { endsAt, label }: { endsAt: number | null; label: string } = $props();
   let now = $state(Date.now());
 
@@ -12,7 +14,8 @@
 
 {#if seconds !== null}
   <p class="countdown" role="timer">
-    {label} <span class="hand">{seconds}</span> s
+    {label} <span class="hand">{seconds}</span>
+    {$t.common.seconds}
   </p>
 {/if}
 

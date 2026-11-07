@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { PlayerView } from '@lowball/shared';
   import { initials } from './format';
+  import { t } from './i18n';
 
   let {
     players,
@@ -15,10 +16,10 @@
   } = $props();
 
   const waiting = $derived(
-    players.filter((p) => !done(p)).map((p) => (p.id === meId ? 'you' : p.name)),
+    players.filter((p) => !done(p)).map((p) => (p.id === meId ? $t.waiting.you : p.name)),
   );
   const description = $derived(
-    players.map((p) => `${p.name}: ${done(p) ? doneLabel : 'still thinking'}`).join(', '),
+    players.map((p) => `${p.name}: ${done(p) ? doneLabel : $t.waiting.stillThinking}`).join(', '),
   );
 </script>
 
@@ -29,7 +30,7 @@
     {/each}
   </div>
   <p class="label" aria-live="polite">
-    {waiting.length > 0 ? `waiting for: ${waiting.join(', ')}` : 'everyone is done'}
+    {waiting.length > 0 ? $t.waiting.waitingFor(waiting) : $t.waiting.everyoneDone}
   </p>
 </div>
 

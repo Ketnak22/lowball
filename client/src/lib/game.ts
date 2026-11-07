@@ -5,8 +5,8 @@ import { socket } from './socket';
 export const room = writable<RoomView | null>(null);
 export const playerId = writable<string | null>(null);
 export const connected = writable(socket.connected);
-/** Shown on the home screen, e.g. after the connection drops. */
-export const notice = writable<string | null>(null);
+/** Set when a dropped connection took the player out of their room. */
+export const connectionLost = writable(false);
 
 export const me = derived(
   [room, playerId],
@@ -18,7 +18,7 @@ socket.on('disconnect', () => {
   connected.set(false);
   // The server removes disconnected players, so there is no room to return to.
   room.update((current) => {
-    if (current) notice.set('Connection to the server was lost. You have left the room.');
+    if (current) connectionLost.set(true);
     return null;
   });
   playerId.set(null);
@@ -36,7 +36,7 @@ async function enterRoom(request: Promise<Ack<JoinedRoom>>): Promise<Ack<JoinedR
   const response = await request;
   if (response.ok) {
     playerId.set(response.data.playerId);
-    notice.set(null);
+    connectionLost.set(false);
   }
   return response;
 }

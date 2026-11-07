@@ -6,8 +6,9 @@
     type JoinedRoom,
     type ErrorCode,
   } from '@lowball/shared';
-  import { errorMessage } from './errors';
-  import { actions, notice } from './game';
+  import { actions, connectionLost } from './game';
+  import { t } from './i18n';
+  import LanguageSwitch from './LanguageSwitch.svelte';
   import { wide } from './media';
 
   type Step = 'start' | 'create' | 'join';
@@ -47,35 +48,34 @@
 </script>
 
 <section class="screen" class:roomy={showIntro}>
+  <div class="lang"><LanguageSwitch /></div>
+
   <div class="columns home">
     {#if showIntro}
       <div class="column intro">
         <h1 class="brand hand">Lowball</h1>
-        <p class="pitch">
-          Everyone writes a number on their own card. Then you bet tokens on the answer you think is
-          closest without going over.
-        </p>
-        <p class="hint desktop-only">Each player uses their own phone or computer.</p>
+        <p class="pitch">{$t.home.pitch}</p>
+        <p class="hint desktop-only">{$t.home.devices}</p>
 
         <div class="paper sample" style="--tilt: 3deg" aria-hidden="true">
-          <span class="label">How long is the Earth's equator?</span>
+          <span class="label">{$t.home.sampleQuestion}</span>
           <div class="sample-line">
-            <span class="hand pen">40 075</span>
-            <span class="muted">km</span>
+            <span class="hand pen">{$t.home.sampleValue}</span>
+            <span class="muted">{$t.home.sampleUnit}</span>
           </div>
         </div>
 
-        {#if $notice}
-          <p class="note" role="status">{$notice}</p>
+        {#if $connectionLost}
+          <p class="note" role="status">{$t.home.connectionLost}</p>
         {/if}
 
         {#if !$wide}
           <div class="spacer"></div>
           <div class="stack">
-            <button class="btn" onclick={() => go('create')}>Create a room</button>
-            <button class="btn secondary" onclick={() => go('join')}>Join a room</button>
+            <button class="btn" onclick={() => go('create')}>{$t.home.create}</button>
+            <button class="btn secondary" onclick={() => go('join')}>{$t.home.join}</button>
           </div>
-          <p class="label center">Runs in the browser, nothing to install.</p>
+          <p class="label center">{$t.home.noInstall}</p>
         {/if}
       </div>
     {/if}
@@ -93,23 +93,21 @@
                 stroke-linejoin="round"
               />
             </svg>
-            Back
+            {$t.home.back}
           </button>
-          <h1 class="title">{askForCode ? 'Join a room' : 'Create a room'}</h1>
+          <h1 class="title">{askForCode ? $t.home.join : $t.home.create}</h1>
           <p class="hint">
-            {askForCode
-              ? 'The code is on the screen of the person who created the room.'
-              : 'You will get a code to share with the other players.'}
+            {askForCode ? $t.home.joinHint : $t.home.createHint}
           </p>
         {/if}
 
         <form id="entry" class="paper card" style="--tilt: {$wide ? -1 : 1.5}deg" onsubmit={submit}>
           {#if $wide}
-            <h2 class="card-title">Join a room</h2>
+            <h2 class="card-title">{$t.home.join}</h2>
           {/if}
 
           <div class="field-group">
-            <label for="name" class="label">Your name</label>
+            <label for="name" class="label">{$t.home.name}</label>
             <input
               id="name"
               class="field"
@@ -121,7 +119,7 @@
 
           {#if askForCode}
             <div class="field-group">
-              <label for="code" class="label">Room code</label>
+              <label for="code" class="label">{$t.home.code}</label>
               <input
                 id="code"
                 class="field code"
@@ -131,29 +129,27 @@
                 maxlength={ROOM_CODE_LENGTH}
                 aria-describedby="code-hint"
               />
-              <span id="code-hint" class="label">
-                {ROOM_CODE_LENGTH} digits, shown to whoever created the room.
-              </span>
+              <span id="code-hint" class="label">{$t.home.codeHint}</span>
             </div>
           {/if}
 
           {#if $wide}
-            <button class="btn" disabled={busy}>Join</button>
-            <div class="or" aria-hidden="true">or</div>
+            <button class="btn" disabled={busy}>{$t.home.joinButton}</button>
+            <div class="or" aria-hidden="true">{$t.home.or}</div>
             <button type="button" class="btn secondary" disabled={busy} onclick={create}>
-              Create a new room
+              {$t.home.createNew}
             </button>
           {/if}
         </form>
 
         <div class="error-slot" aria-live="polite">
-          {#if error}<p class="error">{errorMessage(error)}</p>{/if}
+          {#if error}<p class="error">{$t.errors[error]}</p>{/if}
         </div>
 
         {#if !$wide}
           <div class="spacer"></div>
           <button class="btn" form="entry" disabled={busy}>
-            {askForCode ? 'Join' : 'Create'}
+            {askForCode ? $t.home.joinButton : $t.home.createButton}
           </button>
         {/if}
       </div>
@@ -162,8 +158,16 @@
 </section>
 
 <style>
+  .lang {
+    display: flex;
+    justify-content: flex-end;
+    margin: -8px -6px 0 0;
+  }
   .roomy {
-    padding-top: 56px;
+    padding-top: 20px;
+  }
+  .roomy .lang {
+    margin-bottom: 4px;
   }
   .brand {
     font-size: 64px;
@@ -225,10 +229,13 @@
 
   @media (min-width: 900px) {
     .roomy {
-      padding-top: 64px;
-      justify-content: center;
+      padding-top: 24px;
+    }
+    .lang {
+      margin: 0;
     }
     .home {
+      flex-grow: 1;
       align-items: center;
     }
     .intro {

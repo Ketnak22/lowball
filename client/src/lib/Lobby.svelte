@@ -6,7 +6,8 @@
     type RoomView,
     type ErrorCode,
   } from '@lowball/shared';
-  import { errorMessage } from './errors';
+  import { t } from './i18n';
+  import LanguageSwitch from './LanguageSwitch.svelte';
   import { initials } from './format';
   import { actions, me } from './game';
 
@@ -17,9 +18,9 @@
 
   function details(player: PlayerView): string {
     const parts: string[] = [];
-    if (player.id === $me?.id) parts.push('you');
-    if (player.id === room.hostId) parts.push('host');
-    parts.push(player.ready ? 'ready' : 'not ready');
+    if (player.id === $me?.id) parts.push($t.lobby.you);
+    if (player.id === room.hostId) parts.push($t.lobby.host);
+    parts.push(player.ready ? $t.lobby.ready : $t.lobby.notReady);
     return parts.join(' · ');
   }
 
@@ -31,22 +32,25 @@
 
 <section class="screen">
   <header class="topbar ruled">
-    <span class="hand">lobby</span>
-    <button class="text-btn" onclick={actions.leave}>Leave room</button>
+    <span class="hand">{$t.lobby.topbar}</span>
+    <div class="topbar-actions">
+      <LanguageSwitch />
+      <button class="text-btn" onclick={actions.leave}>{$t.lobby.leave}</button>
+    </div>
   </header>
 
   <div class="columns">
     <div class="column">
       <div class="paper code-card">
-        <span class="label">Room code</span>
+        <span class="label">{$t.lobby.code}</span>
         <span class="code hand pen">{room.code}</span>
-        <span class="label">Share this code. Others enter it on the start screen.</span>
+        <span class="label">{$t.lobby.share}</span>
       </div>
     </div>
 
     <div class="column">
-      <h2 class="players-title">Players ({room.players.length}/{MAX_PLAYERS})</h2>
-      <ul class="players" aria-label="Players">
+      <h2 class="players-title">{$t.lobby.players(room.players.length, MAX_PLAYERS)}</h2>
+      <ul class="players" aria-label={$t.lobby.playersList}>
         {#each room.players as player (player.id)}
           <li>
             <span class="avatar" class:pending={!player.ready} aria-hidden="true">
@@ -62,14 +66,14 @@
 
       <div class="stack actions">
         {#if tooFew}
-          <p class="note">Waiting for at least {MIN_PLAYERS} players.</p>
+          <p class="note">{$t.lobby.tooFew}</p>
         {/if}
         <button class="btn" class:secondary={$me?.ready} onclick={toggleReady}>
-          {$me?.ready ? 'Not ready yet' : 'Ready'}
+          {$me?.ready ? $t.lobby.notReadyButton : $t.lobby.readyButton}
         </button>
-        <p class="label center">The game starts for everyone once all players are ready.</p>
+        <p class="label center">{$t.lobby.startHint}</p>
         <div class="error-slot" aria-live="polite">
-          {#if error}<p class="error center">{errorMessage(error)}</p>{/if}
+          {#if error}<p class="error center">{$t.errors[error]}</p>{/if}
         </div>
       </div>
     </div>
@@ -79,6 +83,11 @@
 <style>
   .topbar {
     align-items: center;
+  }
+  .topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
   }
   .code-card {
     margin: 8px 6px 0;

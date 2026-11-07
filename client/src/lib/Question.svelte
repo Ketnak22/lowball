@@ -1,6 +1,6 @@
 <script lang="ts">
   import { MAX_ANSWER_LENGTH, parseAnswer, type RoomView, type ErrorCode } from '@lowball/shared';
-  import { errorMessage } from './errors';
+  import { locale, t } from './i18n';
   import { actions, me } from './game';
   import Waiting from './Waiting.svelte';
 
@@ -28,22 +28,22 @@
 
 <section class="screen">
   <header class="topbar">
-    <span class="hand">round {room.round?.number} / {room.totalRounds}</span>
+    <span class="hand">{$t.common.round(room.round?.number ?? 0, room.totalRounds)}</span>
   </header>
 
   <div class="columns">
     <div class="column prompt">
-      <span class="label">Question {room.round?.number}</span>
-      <h1 class="title">{room.round?.question.en}</h1>
+      <span class="label">{$t.question.label(room.round?.number ?? 0)}</span>
+      <h1 class="title">{room.round?.question[$locale]}</h1>
       <div class="stack hints">
-        <p class="hint">Write down a number. Nobody sees it until everyone has handed in.</p>
-        <p class="hint">Then everyone bets on the answer closest without going over.</p>
+        <p class="hint">{$t.question.hintWrite}</p>
+        <p class="hint">{$t.question.hintBet}</p>
       </div>
     </div>
 
     <form class="column" onsubmit={submit} novalidate>
       <div class="paper answer" class:handed-in={handedIn}>
-        <label for="answer" class="label">My answer</label>
+        <label for="answer" class="label">{$t.question.myAnswer}</label>
         <div class="answer-line">
           <input
             id="answer"
@@ -57,25 +57,25 @@
             disabled={handedIn}
             oninput={() => (error = null)}
           />
-          <span class="unit muted">{room.round?.unit.en}</span>
+          <span class="unit muted">{room.round?.unit[$locale]}</span>
         </div>
       </div>
 
       <div id="answer-error" class="error-slot" aria-live="polite">
-        {#if error}<p class="error">{errorMessage(error)}</p>{/if}
+        {#if error}<p class="error">{$t.errors[error]}</p>{/if}
       </div>
 
       <div class="spacer"></div>
 
       <button class="btn" disabled={handedIn || busy}>
-        {handedIn ? 'Handed in' : 'Hand in'}
+        {handedIn ? $t.question.handedIn : $t.question.handIn}
       </button>
 
       <Waiting
         players={room.players}
         meId={$me?.id}
         done={(player) => player.answered}
-        doneLabel="handed in"
+        doneLabel={$t.question.doneLabel}
       />
     </form>
   </div>

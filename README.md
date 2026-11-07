@@ -34,6 +34,8 @@ in all tabs at the same time.
 7. Nobody drops below 25 tokens, so everyone can keep betting.
 8. After seven rounds the player with the most tokens wins. The host can start a new game with everyone still in the room.
 
+The interface and the questions are available in Polish and English. Each player picks a language on the start screen or in the lobby, so players in one room can use different languages. The choice is saved in the browser.
+
 ## Architecture
 
 ```
@@ -165,7 +167,7 @@ Free plans on these platforms usually put the server to sleep after a period wit
 - The server is meant to run as a single instance. Running several would need a shared Socket.IO adapter (for example Redis) and shared room storage.
 - There are no accounts. A player is identified by their socket connection, so refreshing the page or losing the connection removes them from the room, and they cannot rejoin a game in progress.
 - There is no time limit for answering or voting, so one inactive player holds up the round until they act or leave.
-- Questions are stored in Polish and English in a JSON file bundled with the server.
+- Questions are stored in a JSON file bundled with the server, so changing them needs a redeploy.
 - The countdown shown between rounds uses the browser's clock, so it can be off by the difference between the client and server clocks.
 
 ## License

@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Bet, ErrorCode, RoomView } from '@lowball/shared';
-  import { errorMessage } from './errors';
+  import { locale, t } from './i18n';
   import { formatNumber } from './format';
   import { actions, me } from './game';
   import Waiting from './Waiting.svelte';
@@ -41,27 +41,26 @@
 
 <section class="screen">
   <header class="topbar ruled">
-    <span class="hand">round {room.round?.number} / {room.totalRounds}</span>
-    <span class="hand">bets</span>
+    <span class="hand">{$t.common.round(room.round?.number ?? 0, room.totalRounds)}</span>
+    <span class="hand">{$t.voting.topbar}</span>
   </header>
 
   <div class="intro">
-    <span class="label">{room.round?.question.en}</span>
-    <p class="hint">
-      Spread your tokens over the answers you trust, or skip this round. Answers are sorted from
-      lowest to highest.
-    </p>
+    <span class="label">{room.round?.question[$locale]}</span>
+    <p class="hint">{$t.voting.hint}</p>
   </div>
 
   <form class="stack" onsubmit={submit} novalidate>
     <ul class="cards">
       {#each room.round?.answers ?? [] as answer, index (answer.playerId)}
         <li class="paper card" style="--tilt: {TILTS[index % TILTS.length]}">
-          <span class="whose">{answer.playerId === $me?.id ? 'Your answer' : 'Answer'}</span>
-          <span class="value hand pen">{formatNumber(answer.value)}</span>
-          <span class="label">{room.round?.unit.en}</span>
+          <span class="whose"
+            >{answer.playerId === $me?.id ? $t.voting.yourAnswer : $t.voting.answer}</span
+          >
+          <span class="value hand pen">{formatNumber(answer.value, $locale)}</span>
+          <span class="label">{room.round?.unit[$locale]}</span>
           <label class="stake">
-            <span class="label">Bet</span>
+            <span class="label">{$t.voting.bet}</span>
             <input
               class="field"
               type="number"
@@ -72,7 +71,7 @@
               disabled={voted}
               bind:value={stakes[answer.playerId]}
               oninput={() => (error = null)}
-              aria-label="Tokens on {formatNumber(answer.value)}"
+              aria-label={$t.voting.betOn(formatNumber(answer.value, $locale))}
             />
           </label>
         </li>
@@ -81,15 +80,15 @@
 
     <div class="footer">
       <p class="balance" class:over={left < 0}>
-        Tokens left: <span class="hand">{left}</span>
-        <span class="muted">of {$me?.tokens}</span>
+        {$t.voting.tokensLeft} <span class="hand">{left}</span>
+        <span class="muted">{$t.voting.of($me?.tokens ?? 0)}</span>
       </p>
       <div class="stack submit">
         <div class="error-slot" aria-live="polite">
-          {#if error}<p class="error">{errorMessage(error)}</p>{/if}
+          {#if error}<p class="error">{$t.errors[error]}</p>{/if}
         </div>
         <button class="btn" disabled={voted || busy}>
-          {voted ? 'Bets placed' : bets.length > 0 ? 'Place bets' : 'Skip betting'}
+          {voted ? $t.voting.placed : bets.length > 0 ? $t.voting.place : $t.voting.skip}
         </button>
       </div>
     </div>
@@ -99,7 +98,7 @@
     players={room.players}
     meId={$me?.id}
     done={(player) => player.voted}
-    doneLabel="placed bets"
+    doneLabel={$t.voting.doneLabel}
   />
 </section>
 

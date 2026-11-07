@@ -3,64 +3,66 @@
   import Countdown from './Countdown.svelte';
   import { formatNumber, signed } from './format';
   import { me } from './game';
+  import { locale, t } from './i18n';
 
   let { room }: { room: RoomView } = $props();
 
   const TILTS = ['-2deg', '1.5deg', '2deg', '-1deg'];
 
   const result = $derived(room.round?.result ?? null);
-  const unit = $derived(room.round?.unit.en ?? '');
+  const unit = $derived(room.round?.unit[$locale] ?? '');
   const myChange = $derived(($me && result?.tokenChanges[$me.id]) ?? 0);
 
   function nameOf(playerId: string): string {
-    if (playerId === $me?.id) return 'You';
-    return room.players.find((p) => p.id === playerId)?.name ?? 'Left the game';
+    if (playerId === $me?.id) return $t.common.you;
+    return room.players.find((p) => p.id === playerId)?.name ?? $t.results.leftGame;
   }
 
   function payout(answer: AnswerView): { text: string; win: boolean } {
     if (!result) return { text: '', win: false };
     const multiplier = payoutMultiplier(answer.value, result.correctAnswer, result.closestAnswer);
-    if (multiplier === 2) return { text: 'exact! 2x', win: true };
-    if (multiplier === 1.5) return { text: 'closest! 1.5x', win: true };
-    if (multiplier === 1) return { text: 'within 25%: 1x', win: false };
+    if (multiplier === 2) return { text: $t.results.exact, win: true };
+    if (multiplier === 1.5) return { text: $t.results.closest, win: true };
+    if (multiplier === 1) return { text: $t.results.near, win: false };
     return {
-      text: answer.value > result.correctAnswer ? 'too high: lost' : 'too low: lost',
+      text: answer.value > result.correctAnswer ? $t.results.tooHigh : $t.results.tooLow,
       win: false,
     };
   }
 
   const summary = $derived.by(() => {
     if (!result) return '';
-    if (result.closestAnswer === null) return 'Every answer went over, so every bet was lost.';
+    if (result.closestAnswer === null) return $t.results.allOver;
     const closest = (room.round?.answers ?? []).filter((a) => a.value === result.closestAnswer);
     const names = closest.map((a) => nameOf(a.playerId)).join(', ');
     const off = result.correctAnswer - result.closestAnswer;
     return off === 0
-      ? `${names} got it exactly right.`
-      : `Closest without going over: ${names}, ${formatNumber(off)} ${unit} short.`;
+      ? $t.results.exactly(names)
+      : $t.results.closestShort(names, formatNumber(off, $locale), unit);
   });
 </script>
 
 <section class="screen">
   <header class="topbar ruled">
-    <span class="hand">round {room.round?.number} / {room.totalRounds}</span>
-    <span class="hand">results</span>
+    <span class="hand">{$t.common.round(room.round?.number ?? 0, room.totalRounds)}</span>
+    <span class="hand">{$t.results.topbar}</span>
   </header>
 
   {#if result}
     <div class="reveal">
       <div class="correct">
-        <span class="label question">{room.round?.question.en}</span>
-        <span class="label">Correct answer</span>
+        <span class="label question">{room.round?.question[$locale]}</span>
+        <span class="label">{$t.results.correct}</span>
         <div class="correct-line">
-          <span class="hand big">{formatNumber(result.correctAnswer)}</span>
+          <span class="hand big">{formatNumber(result.correctAnswer, $locale)}</span>
           <span class="muted unit">{unit}</span>
         </div>
       </div>
       <div class="stack summary">
         <p class="hint">{summary}</p>
         <p class="hint">
-          Your bets: <strong>{signed(myChange)}</strong>. You have {$me?.tokens} tokens.
+          {$t.results.yourBets} <strong>{signed(myChange)}</strong>.
+          {$t.results.tokensNow($me?.tokens ?? 0)}
         </p>
       </div>
     </div>
@@ -74,10 +76,12 @@
           style="--tilt: {TILTS[index % TILTS.length]}; animation-delay: {index * 120}ms"
         >
           <span class="name">{nameOf(answer.playerId)}</span>
-          <span class="hand pen value">{formatNumber(answer.value)}</span>
+          <span class="hand pen value">{formatNumber(answer.value, $locale)}</span>
           <span class="label">
-            off by {formatNumber(Math.abs(answer.value - result.correctAnswer))}
-            {unit}
+            {$t.results.offBy(
+              formatNumber(Math.abs(answer.value - result.correctAnswer), $locale),
+              unit,
+            )}
           </span>
           <span class="hand payout" class:win={label.win}>{label.text}</span>
         </li>
@@ -86,7 +90,7 @@
   {/if}
 
   <div class="spacer"></div>
-  <Countdown endsAt={room.phaseEndsAt} label="Ranking in" />
+  <Countdown endsAt={room.phaseEndsAt} label={$t.results.next} />
 </section>
 
 <style>
