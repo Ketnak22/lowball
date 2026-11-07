@@ -1,10 +1,10 @@
 # Lowball
 
-> Lowball to wieloosobowa gra przeglądarkowa działająca w czasie rzeczywistym. Gracze w jednym pokoju odpowiadają liczbą na to samo pytanie, a potem obstawiają żetony na odpowiedzi, które ich zdaniem są najbliżej prawdy, ale jej nie przekraczają. Frontend napisany jest w Svelte, backend w Node.js (Express i Socket.IO), całość w TypeScript. Poniżej opis po angielsku.
+> Lowball to wieloosobowa gra przeglądarkowa działająca w czasie rzeczywistym. Gracze w jednym pokoju odpowiadają liczbą na to samo pytanie, a potem obstawiają żetony na odpowiedzi, które ich zdaniem są najbliżej prawdy, ale jej nie przekraczają.
 
 Lowball is a real-time multiplayer guessing game for the browser. Everyone answers the same question with a number, then bets tokens on the answer they think is closest to the truth without going over.
 
-Live demo: https://lowball-f337.onrender.com/
+Live demo: https://lowball-f337.onrender.com/ (it runs on Render's free plan, so the first load after a quiet period can take up to a minute while the server wakes up)
 
 ![Two players in one room playing a round, side by side](docs/demo.gif)
 
@@ -45,13 +45,13 @@ lowball/
 │       ├── index.ts         HTTP server, Socket.IO setup
 │       ├── config.ts        PORT and CORS_ORIGIN from the environment
 │       ├── socket/handlers.ts  validates events and calls the game functions
-│       ├── game/room.ts     phase transitions as pure functions
-│       ├── game/scoring.ts  bet settlement as pure functions
+│       ├── game/room.ts     phase transitions
+│       ├── game/scoring.ts  bet settlement
 │       └── questions.json
 └── shared/              types, constants and validation used by both sides
 ```
 
-All game state lives on the server. Clients send actions, the server checks them, updates the room and sends the whole room state back to every player in it. The client doesn't compute scores or decide when a phase ends. It just renders the latest `room:state`.
+All game state lives on the server. Clients send actions, the server checks them, updates the room and sends the whole room state back to every player in it. The client only renders the latest `room:state`.
 
 The game rules are in `server/src/game`, written as pure functions that take a room and return a new one (or an error). They don't touch sockets or timers, so the tests can call them directly. `socket/handlers.ts` validates payloads, calls those functions, stores the result and broadcasts it.
 
@@ -84,7 +84,7 @@ An invalid event gets an error in the acknowledgement and leaves the room as it 
 
 ### Room state and disconnects
 
-All rooms are kept in a `Map` inside `attachGameHandlers` in `server/src/socket/handlers.ts`. A player's id is their socket id. When a socket disconnects, or the player clicks Leave, the server removes that player right away:
+Rooms are kept in memory on the server. When a socket disconnects, or the player clicks Leave, the server removes that player right away:
 
 - In the lobby, the player disappears from the list. If everyone left is ready, the game starts.
 - While answering, their answer is discarded. If everyone left has answered, voting starts.
@@ -95,14 +95,11 @@ All rooms are kept in a `Map` inside `attachGameHandlers` in `server/src/socket/
 
 ## Stack
 
-| Part     | Choice                           | Why                                                                                                     |
-| -------- | -------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| Frontend | Svelte 5 + Vite                  | Small bundle and little boilerplate for a UI that mostly reacts to one state object.                    |
-| Realtime | Socket.IO                        | Rooms and acknowledgements are built in, and it falls back to HTTP polling when WebSockets are blocked. |
-| Backend  | Express 5 on Node.js             | Serves the health check and hosts Socket.IO on the same HTTP server.                                    |
-| Language | TypeScript everywhere            | Event payloads are typed once in `shared/` and checked on both ends.                                    |
-| Tests    | Vitest                           | Runs TypeScript directly with no extra setup.                                                           |
-| Tooling  | ESLint, Prettier, GitHub Actions | Lint, format check, typecheck, tests and build run on every push and pull request.                      |
+- Svelte 5 and Vite on the client. The UI mostly reacts to one state object, so Svelte keeps it small.
+- Socket.IO for real-time communication. Rooms and acknowledgements are built in, and it falls back to HTTP polling when WebSockets are blocked.
+- Express 5 on Node.js, serving the health check and hosting Socket.IO on the same HTTP server.
+- TypeScript in all three packages.
+- Vitest for tests, ESLint and Prettier for code style, GitHub Actions running lint, format check, typecheck, tests and build on every push and pull request.
 
 ## Running locally
 
@@ -134,27 +131,24 @@ To test on a phone in the same network, run `npm run dev:host`. Vite prints the 
 
 Other scripts, all run from the repository root:
 
-| Script              | What it does                                                      |
-| ------------------- | ----------------------------------------------------------------- |
-| `npm run dev:host`  | Like `dev`, but reachable from other devices in the local network |
-| `npm run build`     | Builds the server bundle and the client                           |
-| `npm test`          | Runs the Vitest suites in `shared` and `server`                   |
-| `npm run lint`      | ESLint over the whole repository                                  |
-| `npm run format`    | Formats everything with Prettier                                  |
-| `npm run typecheck` | `tsc` for shared and server, `svelte-check` for the client        |
+| Script              | What it does                                               |
+| ------------------- | ---------------------------------------------------------- |
+| `npm run build`     | Builds the server bundle and the client                    |
+| `npm test`          | Runs the Vitest suites in `shared` and `server`            |
+| `npm run lint`      | ESLint over the whole repository                           |
+| `npm run format`    | Formats everything with Prettier                           |
+| `npm run typecheck` | `tsc` for shared and server, `svelte-check` for the client |
 
 ## Deployment
 
-`npm run build` builds both parts, and the server then serves the built client from `client/dist`. That way the whole game runs as one Node.js service on one address and doesn't need any environment variables.
+`npm run build` builds both parts, and the server then serves the built client from `client/dist`. That way the whole game runs as one Node.js service on one address and doesn't need any environment variables. The live demo is deployed this way on Render.
 
 ## Known limitations
 
 - Rooms exist only in the server's memory. Restarting or redeploying the server ends every game.
-- The server is meant to run as a single instance. Running several would need a shared Socket.IO adapter (for example Redis) and shared room storage.
+- The server is meant to run as a single instance.
 - There are no accounts. A player is identified by their socket connection, so refreshing the page or losing the connection removes them from the room, and they can't rejoin a game in progress.
 - There's no time limit for answering or voting, so one inactive player holds up the round until they act or leave.
-- The questions are in a JSON file bundled with the server, so changing them needs a redeploy.
-- The countdown between rounds uses the browser's clock, so it's off by however much the client and server clocks differ.
 
 ## License
 
