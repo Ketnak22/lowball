@@ -24,6 +24,8 @@ Live demo: https://lowball-f337.onrender.com/ (it runs on Render's free plan, so
    | At most 25% below the correct value             | 1x the stake                  |
    | Anything else                                   | the stake is lost             |
 
+   A winning bet keeps its stake and adds the amount above to your tokens (50 tokens on the exact answer give +100), while a losing bet takes the stake away.
+
 7. Nobody drops below 25 tokens, so everyone can keep betting.
 8. After seven rounds the player with the most tokens wins. The host can start a new game with everyone still in the room.
 
