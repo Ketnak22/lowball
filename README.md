@@ -4,6 +4,8 @@
 
 Lowball is a real-time multiplayer guessing game for the browser. Everyone answers the same question with a number, then bets tokens on the answer they think is closest to the truth without going over.
 
+Live demo: https://lowball-f337.onrender.com/
+
 ![Two players in one room playing a round, side by side](docs/demo.gif)
 
 ## How to play
@@ -144,35 +146,6 @@ Other scripts, all run from the repository root:
 ## Deployment
 
 `npm run build` builds both parts, and the server then serves the built client from `client/dist`. That way the whole game runs as one Node.js service on one address and doesn't need any environment variables.
-
-### Everything on Render
-
-`render.yaml` describes the service. In the Render dashboard choose New, then Blueprint, and pick the repository. To set up a Web Service by hand instead, use:
-
-- Build command: `npm ci && npm run build`
-- Start command: `npm run start -w server`
-- Health check path: `/health`
-- Node.js 22 or newer (the blueprint sets `NODE_VERSION`)
-
-Fly.io or Railway work the same way with the same two commands.
-
-### Client and server separately
-
-You can also host the client as a static site, for example on Vercel, and the server on one of the hosts above.
-
-- Client: `vercel.json` in the repository root holds the build settings (`npm ci`, `npm run build -w client`, output in `client/dist`). Set `VITE_SERVER_URL` to the public URL of the server. It's read at build time, and a Vercel build without it fails on purpose.
-- Server: set `CORS_ORIGIN` to the URL of the client.
-
-With the Vercel CLI, from the repository root:
-
-```sh
-npx vercel login
-npx vercel link
-npx vercel env add VITE_SERVER_URL production
-npx vercel deploy --prod
-```
-
-Free plans on these platforms usually put the server to sleep after a while without traffic. The first visitor after that has to wait for it to start again, and because rooms live in memory, any rooms from before it went to sleep are gone.
 
 ## Known limitations
 
