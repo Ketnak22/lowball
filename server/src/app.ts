@@ -1,7 +1,13 @@
 import express from 'express';
-import routes from './routes/index.ts';
 
-export const app = express();
+export function createApp() {
+  const app = express();
+  app.disable('x-powered-by');
 
-app.use(express.json());
-app.use('/api', routes);
+  // Used by hosting platforms for health checks and to wake a sleeping instance.
+  app.get('/health', (_req, res) => {
+    res.json({ status: 'ok' });
+  });
+
+  return app;
+}

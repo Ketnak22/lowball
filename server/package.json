@@ -4,20 +4,22 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "nodemon src/server.ts",
-    "dev:express": "nodemon src/app.ts",
-    "dev:socket": "nodemon src/server.ts",
-    "build": "tsc",
-    "start": "node dist/server.js"
+    "dev": "tsx watch src/index.ts",
+    "build": "tsup",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
+    "@lowball/shared": "^1.0.0",
     "express": "^5.1.0",
     "socket.io": "^4.8.1"
   },
   "devDependencies": {
     "@types/express": "^5.0.1",
-    "@types/node": "^22.15.3",
-    "nodemon": "^3.1.10",
-    "typescript": "^5.8.3"
+    "@types/node": "^22.20.5",
+    "tsup": "^9.0.0",
+    "tsx": "^4.23.15",
+    "typescript": "~5.9"
   }
 }
