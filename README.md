@@ -4,11 +4,7 @@
 
 Lowball is a real-time multiplayer guessing game for the browser. Everyone answers the same question with a number, then bets tokens on the answer they think is closest to the truth without going over.
 
-<!-- Uncomment once the demo is deployed and docs/demo.gif is in the repo:
-Live demo: DEMO_URL
-
-![Three browser tabs playing in one room](docs/demo.gif)
--->
+![Two players in one room playing a round, side by side](docs/demo.gif)
 
 ## How to play
 
