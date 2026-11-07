@@ -106,7 +106,7 @@ Rooms are kept in memory on the server. When a socket disconnects, or the player
 You need Node.js 22 or newer.
 
 ```bash
-git clone <repository-url> lowball
+git clone https://github.com/Ketnak22/lowball.git
 cd lowball
 npm install
 npm run dev
