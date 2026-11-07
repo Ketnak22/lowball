@@ -1,7 +1,7 @@
 [
   {
     "question": {
-      "pl": "Ile kilometrów ma równik Ziemi?",
+      "pl": "Ile kilometrów ma obwód Ziemi mierzony wzdłuż równika?",
       "en": "How many kilometres long is the Earth's equator?"
     },
     "answer": 40075,
@@ -12,30 +12,8 @@
   },
   {
     "question": {
-      "pl": "Ile litrów wody wypija przeciętny człowiek rocznie?",
-      "en": "How many litres of water does an average person drink in a year?"
-    },
-    "answer": 730,
-    "unit": {
-      "pl": "l",
-      "en": "l"
-    }
-  },
-  {
-    "question": {
-      "pl": "W którym roku wynaleziono żarówkę?",
-      "en": "In what year was the light bulb invented?"
-    },
-    "answer": 1879,
-    "unit": {
-      "pl": "rok",
-      "en": "year"
-    }
-  },
-  {
-    "question": {
-      "pl": "Ile metrów wysokości ma Pałac Kultury i Nauki w Warszawie?",
-      "en": "How many metres tall is the Palace of Culture and Science in Warsaw?"
+      "pl": "Ile metrów wysokości ma Pałac Kultury i Nauki w Warszawie razem z iglicą?",
+      "en": "How many metres tall is the Palace of Culture and Science in Warsaw, including its spire?"
     },
     "answer": 237,
     "unit": {
@@ -45,8 +23,8 @@
   },
   {
     "question": {
-      "pl": "Ile procent ciała dorosłego człowieka stanowi woda?",
-      "en": "What percentage of an adult human body is water?"
+      "pl": "Ile procent masy ciała dorosłego mężczyzny stanowi woda według wartości podawanej w podręcznikach?",
+      "en": "What percentage of an adult man's body weight is water, according to the textbook figure?"
     },
     "answer": 60,
     "unit": {
@@ -78,8 +56,8 @@
   },
   {
     "question": {
-      "pl": "Ile dni trwała II wojna światowa?",
-      "en": "How many days did the Second World War last?"
+      "pl": "Ile dni trwała II wojna światowa, od napaści Niemiec na Polskę do kapitulacji Japonii, licząc oba te dni?",
+      "en": "How many days did the Second World War last, from the German invasion of Poland to the surrender of Japan, counting both days?"
     },
     "answer": 2194,
     "unit": {
@@ -89,24 +67,266 @@
   },
   {
     "question": {
-      "pl": "Ile stron ma polska konstytucja z 1997 roku (wersja drukowana)?",
-      "en": "How many pages long is the 1997 Polish constitution (printed edition)?"
+      "pl": "Z ilu kości składa się szkielet dorosłego człowieka?",
+      "en": "How many bones are there in an adult human skeleton?"
     },
-    "answer": 52,
+    "answer": 206,
     "unit": {
-      "pl": "strony",
-      "en": "pages"
+      "pl": "kości",
+      "en": "bones"
     }
   },
   {
     "question": {
-      "pl": "Ile sekund trwa przeciętny przebłysk pamięci sensorycznej?",
-      "en": "How many seconds does an average flash of sensory memory last?"
+      "pl": "Ile zębów stałych ma dorosły człowiek, licząc zęby mądrości?",
+      "en": "How many permanent teeth does an adult have, including wisdom teeth?"
     },
-    "answer": 0.5,
+    "answer": 32,
     "unit": {
-      "pl": "sekundy",
-      "en": "seconds"
+      "pl": "zęby",
+      "en": "teeth"
+    }
+  },
+  {
+    "question": {
+      "pl": "Ile chromosomów jest w komórce ciała człowieka?",
+      "en": "How many chromosomes are there in a human body cell?"
+    },
+    "answer": 46,
+    "unit": {
+      "pl": "chromosomów",
+      "en": "chromosomes"
+    }
+  },
+  {
+    "question": {
+      "pl": "Ile kilometrów na sekundę przebywa światło w próżni (w pełnych kilometrach)?",
+      "en": "How many kilometres per second does light travel in a vacuum (in whole kilometres)?"
+    },
+    "answer": 299792,
+    "unit": {
+      "pl": "km/s",
+      "en": "km/s"
+    }
+  },
+  {
+    "question": {
+      "pl": "Ile sekund leci światło ze Słońca do Ziemi przy średniej odległości?",
+      "en": "How many seconds does sunlight take to reach the Earth at the average distance?"
+    },
+    "answer": 499,
+    "unit": {
+      "pl": "s",
+      "en": "s"
+    }
+  },
+  {
+    "question": {
+      "pl": "Ile kilometrów wynosi średnia odległość Ziemi od Księżyca?",
+      "en": "How many kilometres is the average distance from the Earth to the Moon?"
+    },
+    "answer": 384400,
+    "unit": {
+      "pl": "km",
+      "en": "km"
+    }
+  },
+  {
+    "question": {
+      "pl": "Ile kelwinów wynosi temperatura efektywna powierzchni Słońca?",
+      "en": "What is the effective surface temperature of the Sun in kelvins?"
+    },
+    "answer": 5772,
+    "unit": {
+      "pl": "K",
+      "en": "K"
+    }
+  },
+  {
+    "question": {
+      "pl": "Ile metrów na sekundę wynosi prędkość dźwięku w powietrzu w temperaturze 20°C (w pełnych metrach)?",
+      "en": "How many metres per second does sound travel in air at 20°C (in whole metres)?"
+    },
+    "answer": 343,
+    "unit": {
+      "pl": "m/s",
+      "en": "m/s"
+    }
+  },
+  {
+    "question": {
+      "pl": "W ilu stopniach Fahrenheita wrze woda przy normalnym ciśnieniu?",
+      "en": "At how many degrees Fahrenheit does water boil at standard pressure?"
+    },
+    "answer": 212,
+    "unit": {
+      "pl": "°F",
+      "en": "°F"
+    }
+  },
+  {
+    "question": {
+      "pl": "W ilu stopniach Celsjusza topi się czyste żelazo?",
+      "en": "At how many degrees Celsius does pure iron melt?"
+    },
+    "answer": 1538,
+    "unit": {
+      "pl": "°C",
+      "en": "°C"
+    }
+  },
+  {
+    "question": {
+      "pl": "Ile pierwiastków chemicznych ma układ okresowy?",
+      "en": "How many chemical elements are there in the periodic table?"
+    },
+    "answer": 118,
+    "unit": {
+      "pl": "pierwiastków",
+      "en": "elements"
+    }
+  },
+  {
+    "question": {
+      "pl": "Ile metrów nad poziomem morza wznosi się szczyt Mount Everestu według pomiaru z 2020 roku?",
+      "en": "How many metres above sea level is the summit of Mount Everest, according to the 2020 survey?"
+    },
+    "answer": 8849,
+    "unit": {
+      "pl": "m",
+      "en": "m"
+    }
+  },
+  {
+    "question": {
+      "pl": "Ile metrów nad poziomem morza ma polski wierzchołek Rysów, najwyższy punkt Polski?",
+      "en": "How many metres above sea level is the Polish summit of Rysy, the highest point in Poland?"
+    },
+    "answer": 2499,
+    "unit": {
+      "pl": "m",
+      "en": "m"
+    }
+  },
+  {
+    "question": {
+      "pl": "Ile metrów głębokości ma Bajkał w najgłębszym miejscu?",
+      "en": "How many metres deep is Lake Baikal at its deepest point?"
+    },
+    "answer": 1642,
+    "unit": {
+      "pl": "m",
+      "en": "m"
+    }
+  },
+  {
+    "question": {
+      "pl": "Ile metrów wysokości ma Burdż Chalifa w Dubaju?",
+      "en": "How many metres tall is the Burj Khalifa in Dubai?"
+    },
+    "answer": 828,
+    "unit": {
+      "pl": "m",
+      "en": "m"
+    }
+  },
+  {
+    "question": {
+      "pl": "Ile metrów ma główne przęsło mostu Golden Gate w San Francisco?",
+      "en": "How many metres long is the main span of the Golden Gate Bridge in San Francisco?"
+    },
+    "answer": 1280,
+    "unit": {
+      "pl": "m",
+      "en": "m"
+    }
+  },
+  {
+    "question": {
+      "pl": "Ile metrów liczy dystans maratonu?",
+      "en": "How many metres long is a marathon?"
+    },
+    "answer": 42195,
+    "unit": {
+      "pl": "m",
+      "en": "m"
+    }
+  },
+  {
+    "question": {
+      "pl": "Na ilu centymetrach nad parkietem zawieszona jest obręcz kosza do koszykówki?",
+      "en": "How many centimetres above the floor is a basketball hoop?"
+    },
+    "answer": 305,
+    "unit": {
+      "pl": "cm",
+      "en": "cm"
+    }
+  },
+  {
+    "question": {
+      "pl": "Ile centymetrów szerokości ma bramka piłkarska, mierząc między słupkami?",
+      "en": "How many centimetres wide is a football goal, measured between the posts?"
+    },
+    "answer": 732,
+    "unit": {
+      "pl": "cm",
+      "en": "cm"
+    }
+  },
+  {
+    "question": {
+      "pl": "Ile pól ma szachownica?",
+      "en": "How many squares are there on a chessboard?"
+    },
+    "answer": 64,
+    "unit": {
+      "pl": "pola",
+      "en": "squares"
+    }
+  },
+  {
+    "question": {
+      "pl": "Ile klawiszy ma standardowy fortepian?",
+      "en": "How many keys does a standard piano have?"
+    },
+    "answer": 88,
+    "unit": {
+      "pl": "klawiszy",
+      "en": "keys"
+    }
+  },
+  {
+    "question": {
+      "pl": "Ile kart ma talia do brydża (bez jokerów)?",
+      "en": "How many cards are there in a standard deck, without jokers?"
+    },
+    "answer": 52,
+    "unit": {
+      "pl": "karty",
+      "en": "cards"
+    }
+  },
+  {
+    "question": {
+      "pl": "Ile liter ma polski alfabet?",
+      "en": "How many letters are there in the Polish alphabet?"
+    },
+    "answer": 32,
+    "unit": {
+      "pl": "litery",
+      "en": "letters"
+    }
+  },
+  {
+    "question": {
+      "pl": "Ile państw należy do ONZ?",
+      "en": "How many member states does the United Nations have?"
+    },
+    "answer": 193,
+    "unit": {
+      "pl": "państwa",
+      "en": "member states"
     }
   }
 ]
