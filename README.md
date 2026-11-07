@@ -129,17 +129,18 @@ cp client/.env.example client/.env
 | `CORS_ORIGIN`     | server | `http://localhost:5173`                                        | Comma-separated origins allowed to connect |
 | `VITE_SERVER_URL` | client | dev: port 3001 on the same host; build: the page's own address | Address of the server                      |
 
-To test on a phone in the same network, run `npm run dev:host -w client`, open the address Vite prints, and add that address to `CORS_ORIGIN`.
+To test on a phone in the same network, run `npm run dev:host`. Vite prints the network address to open, and the server also accepts connections from local network addresses, so `CORS_ORIGIN` stays as it is.
 
 Other scripts, all run from the repository root:
 
-| Script              | What it does                                               |
-| ------------------- | ---------------------------------------------------------- |
-| `npm run build`     | Builds the server bundle and the client                    |
-| `npm test`          | Runs the Vitest suites in `shared` and `server`            |
-| `npm run lint`      | ESLint over the whole repository                           |
-| `npm run format`    | Formats everything with Prettier                           |
-| `npm run typecheck` | `tsc` for shared and server, `svelte-check` for the client |
+| Script              | What it does                                                      |
+| ------------------- | ----------------------------------------------------------------- |
+| `npm run dev:host`  | Like `dev`, but reachable from other devices in the local network |
+| `npm run build`     | Builds the server bundle and the client                           |
+| `npm test`          | Runs the Vitest suites in `shared` and `server`                   |
+| `npm run lint`      | ESLint over the whole repository                                  |
+| `npm run format`    | Formats everything with Prettier                                  |
+| `npm run typecheck` | `tsc` for shared and server, `svelte-check` for the client        |
 
 ## Deployment
 
