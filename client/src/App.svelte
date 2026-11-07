@@ -1,45 +1,29 @@
 <script lang="ts">
-  import { socket } from './socketStore';
-  import JoinRoom from './lib/JoinRoom.svelte';
-  import CreateRoom from './lib/CreateRoom.svelte';
-  import WaitingRoom from './lib/WaitingRoom.svelte';
-  import { users, gameState } from './usersStore';
+  import { connected, room } from './lib/game';
+  import Home from './lib/Home.svelte';
+  import Lobby from './lib/Lobby.svelte';
   import Question from './lib/Question.svelte';
+  import Ranking from './lib/Ranking.svelte';
+  import Results from './lib/Results.svelte';
   import Voting from './lib/Voting.svelte';
-  import VotingResults from './lib/VotingResults.svelte';
-  import PlayerRanking from './lib/PlayerRanking.svelte';
-  import type { User } from './interfaces';
-
-  $socket.on("connect", () => {
-    console.log(`Connected with id: ${$socket.id}`);
-  })
-
-  $socket.on("connect_error", (error) => {
-    throw new Error(`Error connecting to server: ${error}`);
-  })
-
-  // Update user list when new user joins, or disconnects
-  $socket.on("update-players-list", (usersList: User[]) => {
-      $users = usersList
-  })
 </script>
 
 <main>
-  {#if $gameState === "joining"}
-    <CreateRoom />
-    <JoinRoom />
-  {:else if $gameState === "waiting"}
-    <WaitingRoom />
-  {:else if $gameState === "answering"}
-    <Question />
-  {:else if $gameState === "voting"}
-    <Voting />
-  {:else if $gameState === "showingResults"}
-    <VotingResults />
-  {:else if $gameState === "showingRanking"}
-    <PlayerRanking />
+  {#if !$connected}
+    <p class="banner">Connecting to the server...</p>
+  {/if}
+
+  {#if !$room}
+    <Home />
+  {:else if $room.phase === 'lobby'}
+    <Lobby room={$room} />
+  {:else if $room.phase === 'answering'}
+    <Question room={$room} />
+  {:else if $room.phase === 'voting'}
+    <Voting room={$room} />
+  {:else if $room.phase === 'results'}
+    <Results room={$room} />
+  {:else}
+    <Ranking room={$room} />
   {/if}
 </main>
-
-<style>
-</style>
