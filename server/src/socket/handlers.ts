@@ -5,6 +5,7 @@ import {
   validateName,
   validateRoomCode,
   type Ack,
+  type ErrorCode,
   type ClientToServerEvents,
   type JoinedRoom,
   type Result,
@@ -41,7 +42,7 @@ function reply<T>(ack: unknown, response: Ack<T>): void {
   if (typeof ack === 'function') ack(response);
 }
 
-const failure = (error: string): Ack<never> => ({ ok: false, error });
+const failure = (error: ErrorCode): Ack<never> => ({ ok: false, error });
 
 function field(payload: unknown, key: string): unknown {
   return typeof payload === 'object' && payload !== null
@@ -110,7 +111,7 @@ export function attachGameHandlers(io: GameServer, options: GameOptions) {
     /** Runs a game action for the player's room and broadcasts the new state on success. */
     function act(ack: unknown, action: (room: Room) => Result<Room>) {
       const room = currentRoom();
-      if (!room) return reply(ack, failure('You are not in a room.'));
+      if (!room) return reply(ack, failure('notInRoom'));
       const result = action(room);
       if (!result.ok) return reply(ack, failure(result.error));
       reply(ack, { ok: true, data: undefined });
@@ -132,11 +133,11 @@ export function attachGameHandlers(io: GameServer, options: GameOptions) {
     }
 
     socket.on('room:create', (payload, ack) => {
-      if (roomCode) return reply(ack, failure('Leave your current room first.'));
+      if (roomCode) return reply(ack, failure('leaveRoomFirst'));
       const name = validateName(field(payload, 'name'));
       if (!name.ok) return reply(ack, failure(name.error));
       const code = generateCode();
-      if (!code) return reply(ack, failure('No free room codes right now, try again later.'));
+      if (!code) return reply(ack, failure('noFreeCodes'));
 
       const room = createRoom(
         code,
@@ -149,13 +150,13 @@ export function attachGameHandlers(io: GameServer, options: GameOptions) {
     });
 
     socket.on('room:join', (payload, ack) => {
-      if (roomCode) return reply(ack, failure('Leave your current room first.'));
+      if (roomCode) return reply(ack, failure('leaveRoomFirst'));
       const code = validateRoomCode(field(payload, 'code'));
       if (!code.ok) return reply(ack, failure(code.error));
       const name = validateName(field(payload, 'name'));
       if (!name.ok) return reply(ack, failure(name.error));
       const room = rooms.get(code.value);
-      if (!room) return reply(ack, failure('Room not found.'));
+      if (!room) return reply(ack, failure('roomNotFound'));
 
       const result = addPlayer(room, { id: socket.id, name: name.value });
       if (!result.ok) return reply(ack, failure(result.error));
@@ -169,7 +170,7 @@ export function attachGameHandlers(io: GameServer, options: GameOptions) {
 
     socket.on('player:ready', (payload, ack) => {
       const ready = field(payload, 'ready');
-      if (typeof ready !== 'boolean') return reply(ack, failure('Invalid ready state.'));
+      if (typeof ready !== 'boolean') return reply(ack, failure('readyInvalid'));
       act(ack, (room) => setReady(room, socket.id, ready));
     });
 

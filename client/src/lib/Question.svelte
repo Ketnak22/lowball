@@ -1,11 +1,12 @@
 <script lang="ts">
-  import { MAX_ANSWER_LENGTH, parseAnswer, type RoomView } from '@lowball/shared';
+  import { MAX_ANSWER_LENGTH, parseAnswer, type RoomView, type ErrorCode } from '@lowball/shared';
+  import { errorMessage } from './errors';
   import { actions, me } from './game';
   import Waiting from './Waiting.svelte';
 
   let { room }: { room: RoomView } = $props();
   let answer = $state('');
-  let error = $state<string | null>(null);
+  let error = $state<ErrorCode | null>(null);
   let busy = $state(false);
 
   const handedIn = $derived($me?.answered ?? false);
@@ -61,7 +62,7 @@
       </div>
 
       <div id="answer-error" class="error-slot" aria-live="polite">
-        {#if error}<p class="error">{error}</p>{/if}
+        {#if error}<p class="error">{errorMessage(error)}</p>{/if}
       </div>
 
       <div class="spacer"></div>

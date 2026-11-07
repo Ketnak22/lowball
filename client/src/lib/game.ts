@@ -27,7 +27,7 @@ socket.on('room:state', (state) => room.set(state));
 
 function call<T>(send: (ack: AckCallback<T>) => void): Promise<Ack<T>> {
   if (!socket.connected) {
-    return Promise.resolve({ ok: false, error: 'Not connected to the server.' });
+    return Promise.resolve({ ok: false, error: 'notConnected' });
   }
   return new Promise((resolve) => send(resolve));
 }

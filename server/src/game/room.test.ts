@@ -1,4 +1,4 @@
-import { MAX_PLAYERS, STARTING_TOKENS, type Result } from '@lowball/shared';
+import { MAX_PLAYERS, STARTING_TOKENS, type ErrorCode, type Result } from '@lowball/shared';
 import { describe, expect, it } from 'vitest';
 import {
   addPlayer,
@@ -25,9 +25,8 @@ function unwrap(result: Result<Room>): Room {
   return result.value;
 }
 
-function expectError(result: Result<Room>, message: RegExp) {
-  expect(result.ok).toBe(false);
-  if (!result.ok) expect(result.error).toMatch(message);
+function expectError(result: Result<Room>, code: ErrorCode) {
+  expect(result).toEqual({ ok: false, error: code });
 }
 
 function lobby(...names: string[]): Room {
@@ -58,17 +57,17 @@ describe('joining a room', () => {
   });
 
   it('rejects duplicate names regardless of case', () => {
-    expectError(addPlayer(lobby('Ala'), { id: 'x', name: 'ALA' }), /already uses that name/);
+    expectError(addPlayer(lobby('Ala'), { id: 'x', name: 'ALA' }), 'nameTaken');
   });
 
   it('rejects players once the room is full', () => {
     const names = Array.from({ length: MAX_PLAYERS }, (_, i) => `p${i}`);
-    expectError(addPlayer(lobby(...names), { id: 'late', name: 'late' }), /full/);
+    expectError(addPlayer(lobby(...names), { id: 'late', name: 'late' }), 'roomFull');
   });
 
   it('rejects joining after the game started', () => {
     const room = readyAll(lobby('ala', 'ola'));
-    expectError(addPlayer(room, { id: 'x', name: 'x' }), /already started/);
+    expectError(addPlayer(room, { id: 'x', name: 'x' }), 'gameStarted');
   });
 });
 
@@ -137,24 +136,24 @@ describe('phase transitions', () => {
 
 describe('actions in the wrong phase', () => {
   it('rejects answers outside the answering phase', () => {
-    expectError(submitAnswer(lobby('ala', 'ola'), 'ala', 5), /not being collected/);
+    expectError(submitAnswer(lobby('ala', 'ola'), 'ala', 5), 'answersClosed');
   });
 
   it('rejects a second answer', () => {
     const room = unwrap(submitAnswer(readyAll(lobby('ala', 'ola')), 'ala', 5));
-    expectError(submitAnswer(room, 'ala', 6), /already answered/);
+    expectError(submitAnswer(room, 'ala', 6), 'alreadyAnswered');
   });
 
   it('rejects bets outside voting', () => {
-    expectError(submitBets(readyAll(lobby('ala', 'ola')), 'ala', [], NOW), /not open/);
+    expectError(submitBets(readyAll(lobby('ala', 'ola')), 'ala', [], NOW), 'votingClosed');
   });
 
   it('rejects ready changes during the game', () => {
-    expectError(setReady(readyAll(lobby('ala', 'ola')), 'ala', true), /already started/);
+    expectError(setReady(readyAll(lobby('ala', 'ola')), 'ala', true), 'gameStarted');
   });
 
   it('rejects actions from players not in the room', () => {
-    expectError(submitAnswer(readyAll(lobby('ala', 'ola')), 'ghost', 5), /not in this room/);
+    expectError(submitAnswer(readyAll(lobby('ala', 'ola')), 'ghost', 5), 'notInRoom');
   });
 });
 
@@ -164,7 +163,7 @@ describe('bet validation', () => {
   it('rejects bets on answers that do not exist', () => {
     expectError(
       submitBets(voting(), 'ala', [{ playerId: 'nobody', amount: 5 }], NOW),
-      /this round/,
+      'betTargetUnknown',
     );
   });
 
@@ -173,12 +172,12 @@ describe('bet validation', () => {
       { playerId: 'ala', amount: 150 },
       { playerId: 'ola', amount: 51 },
     ];
-    expectError(submitBets(voting(), 'ala', bets, NOW), /enough tokens/);
+    expectError(submitBets(voting(), 'ala', bets, NOW), 'notEnoughTokens');
   });
 
   it('rejects voting twice', () => {
     const room = unwrap(submitBets(voting(), 'ala', [], NOW));
-    expectError(submitBets(room, 'ala', [], NOW), /already placed/);
+    expectError(submitBets(room, 'ala', [], NOW), 'alreadyVoted');
   });
 });
 
@@ -245,7 +244,7 @@ describe('restartGame', () => {
   it('lets only the host restart a finished game', () => {
     const room = finished();
     expect(room.phase).toBe('finished');
-    expectError(restartGame(room, 'ola', questions), /Only the host/);
+    expectError(restartGame(room, 'ola', questions), 'notHost');
 
     const restarted = unwrap(restartGame(room, 'ala', questions));
     expect(restarted.phase).toBe('lobby');
@@ -254,7 +253,7 @@ describe('restartGame', () => {
   });
 
   it('rejects restarting a game in progress', () => {
-    expectError(restartGame(readyAll(lobby('ala', 'ola')), 'ala', questions), /not finished/);
+    expectError(restartGame(readyAll(lobby('ala', 'ola')), 'ala', questions), 'gameNotFinished');
   });
 });
 

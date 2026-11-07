@@ -1,3 +1,5 @@
+import type { ErrorCode } from './errors';
+
 export type Phase = 'lobby' | 'answering' | 'voting' | 'results' | 'ranking' | 'finished';
 
 export interface PlayerView {
@@ -47,7 +49,7 @@ export interface RoomView {
   phaseEndsAt: number | null;
 }
 
-export type Ack<T = undefined> = { ok: true; data: T } | { ok: false; error: string };
+export type Ack<T = undefined> = { ok: true; data: T } | { ok: false; error: ErrorCode };
 export type AckCallback<T = undefined> = (response: Ack<T>) => void;
 
 export interface JoinedRoom {

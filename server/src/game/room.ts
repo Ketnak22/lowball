@@ -6,6 +6,7 @@ import {
   ROUNDS_PER_GAME,
   STARTING_TOKENS,
   type Bet,
+  type ErrorCode,
   type Result,
 } from '@lowball/shared';
 import { settleBets } from './scoring';
@@ -18,7 +19,7 @@ export const DEFAULT_SETTINGS: RoomSettings = {
 };
 
 const ok = (value: Room): Result<Room> => ({ ok: true, value });
-const fail = (error: string): Result<Room> => ({ ok: false, error });
+const fail = (error: ErrorCode): Result<Room> => ({ ok: false, error });
 
 const newPlayer = (id: string, name: string): Player => ({
   id,
@@ -53,18 +54,18 @@ export function createRoom(
 }
 
 export function addPlayer(room: Room, player: { id: string; name: string }): Result<Room> {
-  if (room.phase !== 'lobby') return fail('The game in this room has already started.');
-  if (room.players.some((p) => p.id === player.id)) return fail('You are already in this room.');
-  if (room.players.length >= MAX_PLAYERS) return fail('This room is full.');
+  if (room.phase !== 'lobby') return fail('gameStarted');
+  if (room.players.some((p) => p.id === player.id)) return fail('alreadyInRoom');
+  if (room.players.length >= MAX_PLAYERS) return fail('roomFull');
   if (room.players.some((p) => sameName(p.name, player.name))) {
-    return fail('Someone in this room already uses that name.');
+    return fail('nameTaken');
   }
   return ok({ ...room, players: [...room.players, newPlayer(player.id, player.name)] });
 }
 
 export function setReady(room: Room, playerId: string, ready: boolean): Result<Room> {
-  if (room.phase !== 'lobby') return fail('The game has already started.');
-  if (!room.players.some((p) => p.id === playerId)) return fail('You are not in this room.');
+  if (room.phase !== 'lobby') return fail('gameStarted');
+  if (!room.players.some((p) => p.id === playerId)) return fail('notInRoom');
   const players = room.players.map((p) => (p.id === playerId ? { ...p, ready } : p));
   return ok(startIfEveryoneReady({ ...room, players }));
 }
@@ -90,10 +91,10 @@ function startRound(room: Room, roundIndex: number): Room {
 
 export function submitAnswer(room: Room, playerId: string, value: number): Result<Room> {
   if (room.phase !== 'answering' || !room.round) {
-    return fail('Answers are not being collected right now.');
+    return fail('answersClosed');
   }
-  if (!room.players.some((p) => p.id === playerId)) return fail('You are not in this room.');
-  if (playerId in room.round.answers) return fail('You have already answered.');
+  if (!room.players.some((p) => p.id === playerId)) return fail('notInRoom');
+  if (playerId in room.round.answers) return fail('alreadyAnswered');
   const round = { ...room.round, answers: { ...room.round.answers, [playerId]: value } };
   return ok(startVotingIfEveryoneAnswered({ ...room, round }));
 }
@@ -105,16 +106,16 @@ function startVotingIfEveryoneAnswered(room: Room): Room {
 }
 
 export function submitBets(room: Room, playerId: string, bets: Bet[], now: number): Result<Room> {
-  if (room.phase !== 'voting' || !room.round) return fail('Voting is not open right now.');
+  if (room.phase !== 'voting' || !room.round) return fail('votingClosed');
   const player = room.players.find((p) => p.id === playerId);
-  if (!player) return fail('You are not in this room.');
-  if (playerId in room.round.bets) return fail('You have already placed your bets.');
+  if (!player) return fail('notInRoom');
+  if (playerId in room.round.bets) return fail('alreadyVoted');
   const answers = room.round.answers;
   if (bets.some((bet) => !(bet.playerId in answers))) {
-    return fail('You can only bet on answers from this round.');
+    return fail('betTargetUnknown');
   }
   const total = bets.reduce((sum, bet) => sum + bet.amount, 0);
-  if (total > player.tokens) return fail('You do not have enough tokens for these bets.');
+  if (total > player.tokens) return fail('notEnoughTokens');
 
   const round = { ...room.round, bets: { ...room.round.bets, [playerId]: bets } };
   return ok(finishRoundIfEveryoneVoted({ ...room, round }, now));
@@ -187,8 +188,8 @@ export function removePlayer(room: Room, playerId: string, now: number): Room | 
 }
 
 export function restartGame(room: Room, playerId: string, questions: Question[]): Result<Room> {
-  if (room.phase !== 'finished') return fail('The current game has not finished yet.');
-  if (room.hostId !== playerId) return fail('Only the host can start a new game.');
+  if (room.phase !== 'finished') return fail('gameNotFinished');
+  if (room.hostId !== playerId) return fail('notHost');
   return ok({
     ...room,
     phase: 'lobby',

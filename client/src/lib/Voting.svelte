@@ -1,12 +1,13 @@
 <script lang="ts">
-  import type { Bet, RoomView } from '@lowball/shared';
+  import type { Bet, ErrorCode, RoomView } from '@lowball/shared';
+  import { errorMessage } from './errors';
   import { formatNumber } from './format';
   import { actions, me } from './game';
   import Waiting from './Waiting.svelte';
 
   let { room }: { room: RoomView } = $props();
   let stakes = $state<Record<string, number | null>>({});
-  let error = $state<string | null>(null);
+  let error = $state<ErrorCode | null>(null);
   let busy = $state(false);
 
   const TILTS = ['-2deg', '1.5deg', '2deg', '-1deg'];
@@ -24,11 +25,11 @@
     event.preventDefault();
     if (voted || busy) return;
     if (bets.some((bet) => !Number.isInteger(bet.amount))) {
-      error = 'Bets must be whole numbers.';
+      error = 'betsInvalid';
       return;
     }
     if (left < 0) {
-      error = 'You do not have enough tokens for these bets.';
+      error = 'notEnoughTokens';
       return;
     }
     busy = true;
@@ -85,7 +86,7 @@
       </p>
       <div class="stack submit">
         <div class="error-slot" aria-live="polite">
-          {#if error}<p class="error">{error}</p>{/if}
+          {#if error}<p class="error">{errorMessage(error)}</p>{/if}
         </div>
         <button class="btn" disabled={voted || busy}>
           {voted ? 'Bets placed' : bets.length > 0 ? 'Place bets' : 'Skip betting'}

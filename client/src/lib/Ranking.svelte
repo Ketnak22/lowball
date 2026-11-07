@@ -1,11 +1,12 @@
 <script lang="ts">
-  import type { RoomView } from '@lowball/shared';
+  import type { ErrorCode, RoomView } from '@lowball/shared';
+  import { errorMessage } from './errors';
   import Countdown from './Countdown.svelte';
   import { initials, signed } from './format';
   import { actions, me } from './game';
 
   let { room }: { room: RoomView } = $props();
-  let error = $state<string | null>(null);
+  let error = $state<ErrorCode | null>(null);
 
   const finished = $derived(room.phase === 'finished');
   const isHost = $derived($me?.id === room.hostId);
@@ -90,7 +91,7 @@
         {/if}
         <button class="btn secondary" onclick={actions.leave}>Leave game</button>
         <div class="error-slot" aria-live="polite">
-          {#if error}<p class="error">{error}</p>{/if}
+          {#if error}<p class="error">{errorMessage(error)}</p>{/if}
         </div>
       {:else}
         <Countdown endsAt={room.phaseEndsAt} label="Next round in" />

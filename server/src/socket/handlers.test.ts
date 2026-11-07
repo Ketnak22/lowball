@@ -118,10 +118,10 @@ describe('socket handlers', () => {
     expect(noPayload).toMatchObject({ ok: false });
 
     const badCode = await emit((ack) => send('room:join', { code: '99999', name: 'Ala' }, ack));
-    expect(badCode).toEqual({ ok: false, error: 'Room not found.' });
+    expect(badCode).toEqual({ ok: false, error: 'roomNotFound' });
 
     const outsideRoom = await emit((ack) => send('round:answer', { answer: '5' }, ack));
-    expect(outsideRoom).toEqual({ ok: false, error: 'You are not in a room.' });
+    expect(outsideRoom).toEqual({ ok: false, error: 'notInRoom' });
 
     // An event without an ack callback must not throw on the server.
     send('player:ready', { ready: true });

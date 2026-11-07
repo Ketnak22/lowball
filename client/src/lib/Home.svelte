@@ -1,5 +1,12 @@
 <script lang="ts">
-  import { MAX_NAME_LENGTH, ROOM_CODE_LENGTH, type Ack, type JoinedRoom } from '@lowball/shared';
+  import {
+    MAX_NAME_LENGTH,
+    ROOM_CODE_LENGTH,
+    type Ack,
+    type JoinedRoom,
+    type ErrorCode,
+  } from '@lowball/shared';
+  import { errorMessage } from './errors';
   import { actions, notice } from './game';
   import { wide } from './media';
 
@@ -8,7 +15,7 @@
   let step = $state<Step>('start');
   let name = $state('');
   let code = $state('');
-  let error = $state<string | null>(null);
+  let error = $state<ErrorCode | null>(null);
   let busy = $state(false);
 
   // On a phone the start screen and the form are separate steps; on a desktop both are shown.
@@ -140,7 +147,7 @@
         </form>
 
         <div class="error-slot" aria-live="polite">
-          {#if error}<p class="error">{error}</p>{/if}
+          {#if error}<p class="error">{errorMessage(error)}</p>{/if}
         </div>
 
         {#if !$wide}

@@ -1,10 +1,17 @@
 <script lang="ts">
-  import { MAX_PLAYERS, MIN_PLAYERS, type PlayerView, type RoomView } from '@lowball/shared';
+  import {
+    MAX_PLAYERS,
+    MIN_PLAYERS,
+    type PlayerView,
+    type RoomView,
+    type ErrorCode,
+  } from '@lowball/shared';
+  import { errorMessage } from './errors';
   import { initials } from './format';
   import { actions, me } from './game';
 
   let { room }: { room: RoomView } = $props();
-  let error = $state<string | null>(null);
+  let error = $state<ErrorCode | null>(null);
 
   const tooFew = $derived(room.players.length < MIN_PLAYERS);
 
@@ -62,7 +69,7 @@
         </button>
         <p class="label center">The game starts for everyone once all players are ready.</p>
         <div class="error-slot" aria-live="polite">
-          {#if error}<p class="error center">{error}</p>{/if}
+          {#if error}<p class="error center">{errorMessage(error)}</p>{/if}
         </div>
       </div>
     </div>
