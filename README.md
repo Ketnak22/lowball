@@ -123,11 +123,11 @@ cp server/.env.example server/.env
 cp client/.env.example client/.env
 ```
 
-| Variable          | Where  | Default                          | Meaning                                    |
-| ----------------- | ------ | -------------------------------- | ------------------------------------------ |
-| `PORT`            | server | `3001`                           | Port of the HTTP and Socket.IO server      |
-| `CORS_ORIGIN`     | server | `http://localhost:5173`          | Comma-separated origins allowed to connect |
-| `VITE_SERVER_URL` | client | same host as the page, port 3001 | Address of the server                      |
+| Variable          | Where  | Default                                                        | Meaning                                    |
+| ----------------- | ------ | -------------------------------------------------------------- | ------------------------------------------ |
+| `PORT`            | server | `3001`                                                         | Port of the HTTP and Socket.IO server      |
+| `CORS_ORIGIN`     | server | `http://localhost:5173`                                        | Comma-separated origins allowed to connect |
+| `VITE_SERVER_URL` | client | dev: port 3001 on the same host; build: the page's own address | Address of the server                      |
 
 To test on a phone in the same network, run `npm run dev:host -w client`, open the address Vite prints, and add that address to `CORS_ORIGIN`.
 
@@ -143,21 +143,34 @@ Other scripts, all run from the repository root:
 
 ## Deployment
 
-The client is a static site and the server needs a host that keeps long-lived WebSocket connections open, so they are deployed separately.
+`npm run build` builds both parts, and the server then serves the built client from `client/dist`. The whole game runs as one Node.js service on one address, so no environment variables are needed.
 
-### Client on Vercel or Netlify
+### Everything on Render
 
-- Root directory: the repository root
-- Build command: `npm run build -w client`
-- Output directory: `client/dist`
-- Environment variable: `VITE_SERVER_URL` set to the public URL of the server
+`render.yaml` describes the service. In the Render dashboard choose New, then Blueprint, and pick the repository. The same settings by hand, for a Web Service:
 
-### Server on Render, Fly.io or Railway
-
-- Build command: `npm ci && npm run build -w server`
+- Build command: `npm ci && npm run build`
 - Start command: `npm run start -w server`
-- Environment variable: `CORS_ORIGIN` set to the URL of the deployed client
 - Health check path: `/health`
+- Node.js 22 or newer (the blueprint sets `NODE_VERSION`)
+
+Fly.io or Railway work the same way with the same two commands.
+
+### Client and server separately
+
+The client can also be hosted as a static site, for example on Vercel, with the server on one of the hosts above.
+
+- Client: `vercel.json` in the repository root holds the build settings (`npm ci`, `npm run build -w client`, output in `client/dist`). Set `VITE_SERVER_URL` to the public URL of the server. It is read at build time, and a Vercel build without it fails on purpose.
+- Server: set `CORS_ORIGIN` to the URL of the client.
+
+With the Vercel CLI, from the repository root:
+
+```sh
+npx vercel login
+npx vercel link
+npx vercel env add VITE_SERVER_URL production
+npx vercel deploy --prod
+```
 
 Free plans on these platforms usually put the server to sleep after a period without traffic. The first visitor after that waits while it starts again, and since rooms live in memory, any rooms that existed before it went to sleep are gone.
 
